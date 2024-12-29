@@ -1,5 +1,6 @@
 package com.example.eventspherebackend.config;
 
+import com.example.eventspherebackend.filters.JwtRequestFilter;
 import com.example.eventspherebackend.service.CustomUserDetailsService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
@@ -12,6 +13,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 public class SecurityConfig {
@@ -41,25 +43,30 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtRequestFilter jwtRequestFilter) throws Exception {
         http
-                .csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**", "/public/**", "/login","/register").permitAll()
-                        .anyRequest().authenticated()
+                .csrf(csrf -> csrf.disable()).authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/auth/login", "/auth/register")
+                        .permitAll() // Allow open access to these paths
+                        .anyRequest().authenticated() // All other requests require authentication
                 )
                 .exceptionHandling(exceptions -> exceptions
                         .authenticationEntryPoint((request, response, authException) -> {
-                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                            response.getWriter().write("Unauthorized access in security config");
+                            // Handle unauthorized access (e.g., when not authenticated)
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // HTTP 401 Unauthorized
+                            response.getWriter().write("Unauthorized access - Please log in"+ authException.getMessage());
                         })
                         .accessDeniedHandler((request, response, accessDeniedException) -> {
-                            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-                            response.getWriter().write("Access denied");
+                            // Handle access denied (e.g., when authenticated but no permission)
+                            response.setStatus(HttpServletResponse.SC_FORBIDDEN); // HTTP 403 Forbidden
+                            response.getWriter().write("Access denied - You do not have permission");
                         })
                 )
-                .formLogin(form -> form.disable())
-                .httpBasic(basic -> basic.disable());
+                .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class) // Add JWT filter
+                .formLogin(form -> form.disable()) // Disable form login (since using JWT)
+                .httpBasic(basic -> basic.disable()); // Disable HTTP Basic authentication
+
         return http.build();
     }
+
 }

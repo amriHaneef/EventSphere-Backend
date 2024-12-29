@@ -16,17 +16,28 @@ import java.util.Set;
 @Entity
 public class Users {
 
+    public Users(String username, String password, String role, String name, String email, Date dob, Integer age) {
+        this.username = username;
+        this.password = password;
+        this.role = role;
+        this.name = name;
+        this.email = email;
+        this.dob = dob;
+        this.age = age;
+    }
+
     // Constructors
     public Users(String username, String password) {
         this.username = username;
         this.password = password;
     }
 
-    public Users( String username, String password, String role) {
+    public Users( String username, String password, String role,String name) {
 
         this.username = username;
         this.password = password;
         this.role = role;
+        this.name =name;
     }
 
     @Id
@@ -34,7 +45,7 @@ public class Users {
     private Long id;
 
     @Column(nullable = false, unique = true)
-    private String username;
+    private String username = "Default Name";
 
     @Column(nullable = false)
     private String password;

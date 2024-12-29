@@ -6,10 +6,7 @@ import com.example.eventspherebackend.service.UserService;
 import com.example.eventspherebackend.util.JwtUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -46,16 +43,30 @@ public class UserController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody Map<String, String> registrationRequest) {
-        String username = registrationRequest.get("username");
-        String password = registrationRequest.get("password");
-        String role = registrationRequest.get("role");
+        try {
+            String username = registrationRequest.get("username");
+            String password = registrationRequest.get("password");
+            String role = registrationRequest.get("role");
+            String name = registrationRequest.get("name");
 
-        // Create a new Users object
-        Users user = new Users(username, password, role); // No `id` required
+            // Create a new Users object
+            Users user = new Users(username, password, role,name); // No `id` required
 
-        // Register the user
-        userService.registerUser(user);
+            // Register the user
+            userService.registerUser(user);
 
-        return ResponseEntity.ok(Map.of("message", "User registered successfully"));
+            return ResponseEntity.ok(Map.of("message", "User registered successfully"));
+        }
+        catch (Exception e){
+            return ResponseEntity.ok(Map.of("error: ", e.getMessage()));
+
+        }
     }
+
+    @GetMapping("/message")
+    public String getMessage() {
+        return ("Hello, this is a simple message");
+    }
+
+
 }
