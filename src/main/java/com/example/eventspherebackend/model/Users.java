@@ -5,11 +5,29 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+
 @Getter
 @Setter
 @NoArgsConstructor
 @Entity
 public class Users {
+
+    // Constructors
+    public Users(String username, String password) {
+        this.username = username;
+        this.password = password;
+    }
+
+    public Users( String username, String password, String role) {
+
+        this.username = username;
+        this.password = password;
+        this.role = role;
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,16 +42,20 @@ public class Users {
     @Column(nullable = false)
     private String role;
 
-    // Constructors
-    public Users(String username, String password) {
-        this.username = username;
-        this.password = password;
-    }
+    @Column(nullable = false)
+    private String name;
 
-    public Users( String username, String password, String role) {
+    private String email;
+    private Date dob;
+    private Integer age;
 
-        this.username = username;
-        this.password = password;
-        this.role = role;
-    }
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt = LocalDateTime.now();
+
+    private LocalDateTime updatedAt;
+
+    private String status = "active";
+
+    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<StudentBatch> studentBatches = new HashSet<>();
 }
