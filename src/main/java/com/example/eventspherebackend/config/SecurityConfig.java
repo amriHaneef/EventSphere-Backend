@@ -54,7 +54,7 @@ public class SecurityConfig {
                         .authenticationEntryPoint((request, response, authException) -> {
                             // Handle unauthorized access (e.g., when not authenticated)
                             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // HTTP 401 Unauthorized
-                            response.getWriter().write("Unauthorized access - Please log in"+ authException.getMessage());
+                            response.getWriter().write("Unauthorized access - Please log in");
                         })
                         .accessDeniedHandler((request, response, accessDeniedException) -> {
                             // Handle access denied (e.g., when authenticated but no permission)

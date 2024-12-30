@@ -35,10 +35,14 @@ public UserService(AuthenticationManager authenticationManager, UserRepository u
 
     @Override
     public UserDetails loadUserByUsername(String username) {
-        // Replace with actual logic to fetch user details from your database
-        return User.builder()
-                .username(username)
+        Users user = userRepository.findByUsername(username);
+        UserDetails userDetails = User.builder()
+                .username(user.getUsername())
+                .password(user.getPassword())
+                .roles(user.getRole())
                 .build();
+
+        return userDetails;
     }
 
     public Users registerUser(Users users) {
