@@ -66,7 +66,7 @@ public UserService(AuthenticationManager authenticationManager, UserRepository u
 
                 System.out.println("Role: " + role);
 
-                return "role: "+role +" "+"token: "+token;
+                return token;
             }
         } catch (Exception e) {
 
