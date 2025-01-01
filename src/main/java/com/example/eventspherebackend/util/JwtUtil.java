@@ -17,6 +17,9 @@ public class JwtUtil {
 
     private static final SecretKey SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256); // Secure 256-bit key
     private static final long EXPIRATION_TIME = 3600000; // 1 hour in milliseconds
+    public static String role;
+    public static String username;
+    public static int userId;
 
     // Generate a JWT token
     public String generateToken(String username, String role) {
@@ -73,7 +76,7 @@ public class JwtUtil {
     }
 
     // Get the role from the token
-    public String getRoleFromToken(String token) {
-        return extractClaim(token, claims -> claims.get("role", String.class));
+    public void getRoleFromToken(String token) {
+        role = extractClaim(token, claims -> claims.get("role", String.class));
     }
 }

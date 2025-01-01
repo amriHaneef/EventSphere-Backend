@@ -3,23 +3,20 @@ package com.example.eventspherebackend.model;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @Entity
 @Table(name = "events")
 public class Event {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
 
     @Column(nullable = false)
     private String title;
 
     @Column(nullable = false)
     private String type;
-
-    @ManyToOne
-    @JoinColumn(name = "batch_id")
-    private Batch batch;
 
     private String timePeriod;
     private String sessionLink;
@@ -34,6 +31,49 @@ public class Event {
 
     private LocalDateTime updatedAt;
     private String status = "planned";
+    private Date eventDate;
 
-    // Getters and Setters
+    public int getId() {
+        return id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public String getTimePeriod() {
+        return timePeriod;
+    }
+
+    public String getSessionLink() {
+        return sessionLink;
+    }
+
+    public String getPlatform() {
+        return platform;
+    }
+
+    public Users getCoordinator() {
+        return coordinator;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public Date getEventDate() {
+        return eventDate;
+    }
 }
