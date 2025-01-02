@@ -7,9 +7,10 @@ import java.util.Date;
 import java.util.List;
 
 public interface EventRepository extends JpaRepository<Event, String> {
-    // Spring Data JPA will automatically implement this method based on the method name.
+
     List<Event> findByEventDate(Date eventDate);
 
+    List<Event> findByCoordinatorUsernameAndEventDate(String username,Date eventDate);
 
 
 }

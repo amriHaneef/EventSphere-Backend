@@ -3,6 +3,7 @@ package com.example.eventspherebackend.service;
 import com.example.eventspherebackend.dto.EventDTO;
 import com.example.eventspherebackend.model.Event;
 import com.example.eventspherebackend.repository.EventRepository;
+import com.example.eventspherebackend.repository.StudentEventRepository;
 import com.example.eventspherebackend.util.JwtUtil;
 import org.springframework.stereotype.Service;
 
@@ -14,9 +15,11 @@ import java.util.List;
 @Service
 public class EventService {
     final private EventRepository EventRepository;
+    final private StudentEventRepository StudentEventRepository;
 
-    public EventService(com.example.eventspherebackend.repository.EventRepository eventRepository) {
+    public EventService(com.example.eventspherebackend.repository.EventRepository eventRepository, com.example.eventspherebackend.repository.StudentEventRepository studentEventRepository) {
         EventRepository = eventRepository;
+        StudentEventRepository = studentEventRepository;
     }
 
     public List<EventDTO> getAllEvents(Date eventDate) {
@@ -26,9 +29,12 @@ public class EventService {
 
         if(role.equals("Admin")) {
            eventList = EventRepository.findByEventDate(eventDate);
+        } else if(role.equals("Teacher")) {
+            eventList = EventRepository.findByCoordinatorUsernameAndEventDate(JwtUtil.username,eventDate);
         } else {
-            eventList = EventRepository.findByEventDate(eventDate);
+            eventList = StudentEventRepository.findEventByUsername(JwtUtil.username);
         }
+
 
 
         List<EventDTO> eventDTOList = new ArrayList<>();
