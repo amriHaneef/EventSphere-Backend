@@ -5,6 +5,7 @@ import com.example.eventspherebackend.service.EventService;
 import com.example.eventspherebackend.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
@@ -24,7 +25,6 @@ public class EventController {
 
     @GetMapping("/getAllEvents")
     public List<EventDTO> getAllEvents(@RequestParam("eventDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date eventDate) {
-
         System.out.println("Event Date: " + eventDate);
         return eventService.getAllEvents(eventDate);
 
@@ -33,6 +33,20 @@ public class EventController {
     @GetMapping("/getEventById")
     public EventDTO getEventById(@RequestParam("eventId") String eventId) {
         return eventService.getEventById(Integer.parseInt(eventId));
+    }
+
+    @PostMapping("/addEvent")
+    @PreAuthorize("hasRole('Teacher')")
+    public String addEvent(@RequestBody EventDTO eventDTO) {
+        eventService.addEvent(eventDTO);
+        return "Event added successfully";
+    }
+
+    @PostMapping("/updateEvent")
+    @PreAuthorize("hasRole('Teacher')")
+    public String updateEvent(@RequestBody EventDTO eventDTO) {
+        eventService.updateEvent(eventDTO);
+        return "Event updated successfully";
     }
 
 }

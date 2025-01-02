@@ -21,5 +21,20 @@ public class StudentEvent {
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    // Getters and Setters
+    public String getId() {
+        return id;
+    }
+
+    public Users getStudent() {
+        return student;
+    }
+
+    public Event getEvent() {
+        return event;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+// Getters and Setters
 }

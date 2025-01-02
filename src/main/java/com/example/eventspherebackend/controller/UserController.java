@@ -5,6 +5,7 @@ import com.example.eventspherebackend.service.CustomUserDetailsService;
 import com.example.eventspherebackend.service.UserService;
 import com.example.eventspherebackend.util.JwtUtil;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,6 +43,7 @@ public class UserController {
     }
 
     @PostMapping("/register")
+    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<?> register(@RequestBody Map<String, String> registrationRequest) {
         try {
             String username = registrationRequest.get("username");
@@ -61,6 +63,10 @@ public class UserController {
             return ResponseEntity.ok(Map.of("error: ", e.getMessage()));
 
         }
+    }
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout() {
+        return ResponseEntity.ok(Map.of("message", "User logged out successfully"));
     }
 
     @GetMapping("/message")

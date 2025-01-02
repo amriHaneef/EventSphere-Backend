@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface StudentBatchRepository extends JpaRepository<StudentBatch, String> {
     // Add custom query methods if required
-    List<EventDTO> findEventByUsername(String username);
+//    List<EventDTO> findEventByUsername(String username);
 }
