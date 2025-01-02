@@ -35,5 +35,35 @@ public class Batch {
     @OneToMany(mappedBy = "batch", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<StudentBatch> studentBatches = new HashSet<>();
 
-    // Getters and Setters
+    public String getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Users getConsultant() {
+        return consultant;
+    }
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public Set<StudentBatch> getStudentBatches() {
+        return studentBatches;
+    }
 }

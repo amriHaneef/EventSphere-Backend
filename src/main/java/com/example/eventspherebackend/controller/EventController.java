@@ -27,7 +27,6 @@ public class EventController {
     public List<EventDTO> getAllEvents(@RequestParam("eventDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date eventDate) {
         System.out.println("Event Date: " + eventDate);
         return eventService.getAllEvents(eventDate);
-
     }
 
     @GetMapping("/getEventById")

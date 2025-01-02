@@ -21,5 +21,19 @@ public class StudentBatch {
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    // Getters and Setters
+    public String getId() {
+        return id;
+    }
+
+    public Users getStudent() {
+        return student;
+    }
+
+    public Batch getBatch() {
+        return batch;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
 }

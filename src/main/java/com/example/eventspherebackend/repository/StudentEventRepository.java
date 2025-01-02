@@ -7,7 +7,9 @@ import java.util.Date;
 import java.util.List;
 
 public interface StudentEventRepository extends JpaRepository<StudentEvent, String> {
-    // Add custom query methods if required, e.g.:
+
     List<StudentEvent> findByStudentId(Long studentId);
     List<StudentEvent> findByStudentUsernameAndEventEventDate(String username,Date eventDate);
+
+    List<StudentEvent> findStudentByEventId(Long id);
 }

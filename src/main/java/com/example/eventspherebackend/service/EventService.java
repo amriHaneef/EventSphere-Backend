@@ -1,11 +1,8 @@
 package com.example.eventspherebackend.service;
 
 import com.example.eventspherebackend.dto.EventDTO;
-import com.example.eventspherebackend.model.Event;
-import com.example.eventspherebackend.model.StudentEvent;
-import com.example.eventspherebackend.repository.EventRepository;
-import com.example.eventspherebackend.repository.StudentEventRepository;
-import com.example.eventspherebackend.repository.UserRepository;
+import com.example.eventspherebackend.model.*;
+import com.example.eventspherebackend.repository.*;
 import com.example.eventspherebackend.util.JwtUtil;
 import org.springframework.stereotype.Service;
 
@@ -20,19 +17,23 @@ public class EventService {
     final private EventRepository EventRepository;
     final private StudentEventRepository StudentEventRepository;
     final private UserRepository UserRepository;
+    final private BatchEventRepository BatchEventRepository;
+    final private StudentBatchRepository StudentBatchRepository;
 
 
-    public EventService(com.example.eventspherebackend.repository.EventRepository eventRepository, com.example.eventspherebackend.repository.StudentEventRepository studentEventRepository, com.example.eventspherebackend.repository.UserRepository userRepository) {
+    public EventService(EventRepository eventRepository,StudentEventRepository studentEventRepository,UserRepository userRepository,BatchEventRepository batchEventRepository,StudentBatchRepository studentBatchRepository) {
         EventRepository = eventRepository;
         StudentEventRepository = studentEventRepository;
         UserRepository = userRepository;
-
+        BatchEventRepository = batchEventRepository;
+        StudentBatchRepository = studentBatchRepository;
     }
 
     public List<EventDTO> getAllEvents(Date eventDate) {
 
         List<Event> eventList;
         List<StudentEvent> studentEventList;
+        List<BatchEvent> batchEventList;
         String role = JwtUtil.role;
 
         if(role.equals("Admin")) {
@@ -41,9 +42,13 @@ public class EventService {
             eventList = EventRepository.findByCoordinatorUsernameAndEventDate(JwtUtil.username,eventDate);
         } else {
             studentEventList = StudentEventRepository.findByStudentUsernameAndEventEventDate(JwtUtil.username, eventDate);
+            batchEventList = BatchEventRepository.findEventByBatchId(StudentBatchRepository.findByStudentUsername(JwtUtil.username).getBatch().getId());
             eventList = studentEventList.stream()
                     .map(StudentEvent::getEvent)
                     .collect(Collectors.toList());
+            eventList.addAll(batchEventList.stream()
+                    .map(BatchEvent::getEvent)
+                    .collect(Collectors.toList()));
         }
 
         List<EventDTO> eventDTOList = new ArrayList<>();
@@ -127,4 +132,10 @@ public class EventService {
 
         EventRepository.save(event);
     }
+
+    public void deleteEvent(int id) {
+        EventRepository.deleteById(String.valueOf(id));
+    }
+
+
 }

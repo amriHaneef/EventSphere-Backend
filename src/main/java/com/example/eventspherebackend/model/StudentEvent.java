@@ -36,5 +36,20 @@ public class StudentEvent {
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
-// Getters and Setters
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setStudent(Users student) {
+        this.student = student;
+    }
+
+    public void setEvent(Event event) {
+        this.event = event;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
 }
