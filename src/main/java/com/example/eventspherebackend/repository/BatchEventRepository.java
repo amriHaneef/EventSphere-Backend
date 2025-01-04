@@ -9,5 +9,5 @@ public interface BatchEventRepository extends JpaRepository<BatchEvent, String> 
 
     List<BatchEvent> findEventByBatchId(String Id);
 
-    List<BatchEvent> findBatchByEventId(String id);
+//    List<BatchEvent> findBatchByEventId(String id);
 }
