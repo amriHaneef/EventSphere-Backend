@@ -22,21 +22,21 @@ public class BatchEventService {
         BatchRepository = batchRepository;
     }
 
-//    public void assignBatch(String eventId, String batchId) {
-//        BatchEvent batchEvent = new BatchEvent();
-//        batchEvent.setEvent(EventRepository.findById(eventId).orElse(null));
-//        batchEvent.setBatch(BatchRepository.findById(batchId).orElse(null));
-//        BatchEventRepository.save(batchEvent);
-//    }
-//
-//    public List<Batch> getAsignedBatches(String id) {
-//        List<BatchEvent> batchEventList = BatchEventRepository.findBatchByEventId(id);
-//        List<Batch> batchList = new ArrayList<>();
-//        for (BatchEvent batchEvent : batchEventList) {
-//            batchList.add(batchEvent.getBatch());
-//        }
-//        return batchList;
-//    }
+    public void assignBatch(String eventId, String batchId) {
+        BatchEvent batchEvent = new BatchEvent();
+        batchEvent.setEvent(EventRepository.findById(eventId).orElse(null));
+        batchEvent.setBatch(BatchRepository.findById(batchId).orElse(null));
+        BatchEventRepository.save(batchEvent);
+    }
+
+    public List<Batch> getAsignedBatches(int id) {
+        List<BatchEvent> batchEventList = BatchEventRepository.findBatchByEventId(id);
+        List<Batch> batchList = new ArrayList<>();
+        for (BatchEvent batchEvent : batchEventList) {
+            batchList.add(batchEvent.getBatch());
+        }
+        return batchList;
+    }
 
 
 }

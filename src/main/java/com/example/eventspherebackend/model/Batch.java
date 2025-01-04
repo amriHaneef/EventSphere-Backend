@@ -31,6 +31,7 @@ public class Batch {
     private LocalDateTime updatedAt;
 
     private String status = "active";
+    private boolean state = true;
 
     @OneToMany(mappedBy = "batch", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<StudentBatch> studentBatches = new HashSet<>();

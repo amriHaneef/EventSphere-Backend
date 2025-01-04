@@ -3,11 +3,12 @@ package com.example.eventspherebackend.repository;
 import com.example.eventspherebackend.model.BatchEvent;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Date;
 import java.util.List;
 
 public interface BatchEventRepository extends JpaRepository<BatchEvent, String> {
 
-    List<BatchEvent> findEventByBatchId(String Id);
+    List<BatchEvent> findEventByBatchIdAndEventEventDate(String Id, Date eventDate);
 
-//    List<BatchEvent> findBatchByEventId(String id);
+    List<BatchEvent> findBatchByEventId(int id);
 }

@@ -42,7 +42,7 @@ public class EventService {
             eventList = EventRepository.findByCoordinatorUsernameAndEventDate(JwtUtil.username,eventDate);
         } else {
             studentEventList = StudentEventRepository.findByStudentUsernameAndEventEventDate(JwtUtil.username, eventDate);
-            batchEventList = BatchEventRepository.findEventByBatchId(StudentBatchRepository.findByStudentUsername(JwtUtil.username).getBatch().getId());
+            batchEventList = BatchEventRepository.findEventByBatchIdAndEventEventDate(StudentBatchRepository.findByStudentUsername(JwtUtil.username).getBatch().getId(), eventDate);
             eventList = studentEventList.stream()
                     .map(StudentEvent::getEvent)
                     .collect(Collectors.toList());
