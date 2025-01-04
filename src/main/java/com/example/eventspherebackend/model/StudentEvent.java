@@ -1,11 +1,11 @@
 package com.example.eventspherebackend.model;
-import jakarta.persistence.*;
 
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "students_batches")
-public class StudentBatch {
+@Table(name = "student_events")
+public class StudentEvent {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
@@ -15,8 +15,8 @@ public class StudentBatch {
     private Users student;
 
     @ManyToOne
-    @JoinColumn(name = "batch_id", nullable = false)
-    private Batch batch;
+    @JoinColumn(name = "event_id", nullable = false)
+    private Event event;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
@@ -29,11 +29,27 @@ public class StudentBatch {
         return student;
     }
 
-    public Batch getBatch() {
-        return batch;
+    public Event getEvent() {
+        return event;
     }
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setStudent(Users student) {
+        this.student = student;
+    }
+
+    public void setEvent(Event event) {
+        this.event = event;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }
