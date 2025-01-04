@@ -7,8 +7,8 @@ import java.time.LocalDateTime;
 @Table(name = "student_events")
 public class StudentEvent {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id ;
 
     @ManyToOne
     @JoinColumn(name = "student_id", nullable = false)
@@ -21,7 +21,7 @@ public class StudentEvent {
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
@@ -38,7 +38,7 @@ public class StudentEvent {
     }
 
     public void setId(String id) {
-        this.id = id;
+        this.id = Integer.parseInt(id);
     }
 
     public void setStudent(Users student) {

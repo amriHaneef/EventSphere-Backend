@@ -12,4 +12,6 @@ public interface StudentEventRepository extends JpaRepository<StudentEvent, Stri
     List<StudentEvent> findByStudentUsernameAndEventEventDate(String username,Date eventDate);
 
     List<StudentEvent> findStudentByEventId(Long id);
+
+    void deleteByEventIdAndStudentId(int eventId, Long studentId);
 }

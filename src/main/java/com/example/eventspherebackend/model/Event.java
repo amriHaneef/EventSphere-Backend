@@ -1,9 +1,12 @@
 package com.example.eventspherebackend.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "events")
@@ -29,9 +32,11 @@ public class Event {
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    @Getter
     private LocalDateTime updatedAt;
     private String status = "planned";
     private Date eventDate;
+
 
     public void setId(int id) {
         this.id = id;
@@ -109,10 +114,6 @@ public class Event {
         return createdAt;
     }
 
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
     public String getStatus() {
         return status;
     }
@@ -120,4 +121,8 @@ public class Event {
     public Date getEventDate() {
         return eventDate;
     }
+
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Attendance> attendances = new HashSet<>();
+
 }

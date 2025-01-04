@@ -12,5 +12,4 @@ public interface EventRepository extends JpaRepository<Event, String> {
 
     List<Event> findByCoordinatorUsernameAndEventDate(String username,Date eventDate);
 
-
 }

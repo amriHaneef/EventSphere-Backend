@@ -1,10 +1,12 @@
 package com.example.eventspherebackend.service;
 
+import com.example.eventspherebackend.dto.UsersDTO;
 import com.example.eventspherebackend.model.StudentEvent;
 import com.example.eventspherebackend.model.Users;
 import com.example.eventspherebackend.repository.EventRepository;
 import com.example.eventspherebackend.repository.StudentEventRepository;
 import com.example.eventspherebackend.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -23,19 +25,44 @@ public class StudentEventService {
         UserRepository = userRepository;
     }
 
-    public void assignStudent(Long eventId, Long studentId) {
+    //assign student to event
+    public void assignStudent(String eventId, String studentId) {
         StudentEvent studentEvent = new StudentEvent();
-        studentEvent.setEvent(EventRepository.findById(String.valueOf(eventId)).orElse(null));
-        studentEvent.setStudent(UserRepository.findById(String.valueOf(studentId)).orElse(null));
+        studentEvent.setEvent(EventRepository.findById(eventId).orElse(null));
+        studentEvent.setStudent(UserRepository.findById(studentId).orElse(null));
         StudentEventRepository.save(studentEvent);
     }
 
-    public List<Users> getAsignedStudents(Long id) {
+    //get all students assigned to an event
+    public List<UsersDTO> getAsignedStudents(Long id) {
         List<StudentEvent> studentEventList = StudentEventRepository.findStudentByEventId(id);
-        List<Users> studentList = new ArrayList<>();
+        List<UsersDTO> studentList = new ArrayList<>();
         for (StudentEvent studentEvent : studentEventList) {
-            studentList.add(studentEvent.getStudent());
+            Users student = studentEvent.getStudent();
+            UsersDTO studentDTO = convertToUsersDTO(student);
+            studentList.add(studentDTO);
         }
         return studentList;
+    }
+
+    @Transactional
+    public void removeStudent(String eventId, String studentId) {
+        StudentEventRepository.deleteByEventIdAndStudentId(Integer.parseInt(eventId), Long.getLong(studentId));
+    }
+
+    // Helper method to convert Users to UsersDTO
+    private UsersDTO convertToUsersDTO(Users user) {
+        UsersDTO dto = new UsersDTO();
+        dto.setId(user.getId());
+        dto.setUsername(user.getUsername());
+        dto.setRole(user.getRole());
+        dto.setName(user.getName());
+        dto.setEmail(user.getEmail());
+        dto.setDob(user.getDob());
+        dto.setAge(user.getAge());
+        dto.setStatus(user.getStatus());
+        dto.setCreatedAt(user.getCreatedAt());
+        dto.setUpdatedAt(user.getUpdatedAt());
+        return dto;
     }
 }

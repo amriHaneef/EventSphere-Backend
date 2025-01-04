@@ -13,8 +13,8 @@ import java.util.Set;
 @Table(name = "batches")
 public class Batch {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
 
     @Column(nullable = false)
     private String name;
@@ -35,7 +35,7 @@ public class Batch {
     @OneToMany(mappedBy = "batch", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<StudentBatch> studentBatches = new HashSet<>();
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 

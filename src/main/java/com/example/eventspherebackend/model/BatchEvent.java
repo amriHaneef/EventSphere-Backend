@@ -7,8 +7,8 @@ import java.time.LocalDateTime;
 @Table(name = "batch_events")
 public class BatchEvent {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id ;
 
     @ManyToOne
     @JoinColumn(name = "batch_id", nullable = false)
@@ -22,7 +22,7 @@ public class BatchEvent {
     private LocalDateTime createdAt = LocalDateTime.now();
 
     public void setId(String id) {
-        this.id = id;
+        this.id = Integer.parseInt(id);
     }
 
     public void setBatch(Batch batch) {
@@ -38,7 +38,7 @@ public class BatchEvent {
     }
 
     public String getId() {
-        return id;
+        return String.valueOf(id);
     }
 
     public Batch getBatch() {
