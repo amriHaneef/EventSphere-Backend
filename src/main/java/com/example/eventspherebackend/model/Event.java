@@ -32,7 +32,6 @@ public class Event {
     private LocalDateTime updatedAt;
     private String status = "planned";
     private Date eventDate;
-    private boolean state = true;
 
     public void setId(int id) {
         this.id = id;

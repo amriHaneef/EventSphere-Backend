@@ -59,7 +59,6 @@ public class Users {
     private String email;
     private Date dob;
     private Integer age;
-    private boolean state = true;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
