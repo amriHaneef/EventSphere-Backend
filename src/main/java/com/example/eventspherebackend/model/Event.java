@@ -2,18 +2,22 @@ package com.example.eventspherebackend.model;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "events")
 public class Event {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private int id ;
 
     @Column(nullable = false)
     private String title;
@@ -25,6 +29,10 @@ public class Event {
     private String sessionLink;
     private String platform;
 
+    public void setId(String id) {
+        this.id = Integer.parseInt(id);
+    }
+
     @ManyToOne
     @JoinColumn(name = "coordinator_id")
     private Users coordinator;
@@ -32,103 +40,16 @@ public class Event {
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    @Getter
     private LocalDateTime updatedAt;
     private String status = "planned";
     private Date eventDate;
 
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public void setTimePeriod(String timePeriod) {
-        this.timePeriod = timePeriod;
-    }
-
-    public void setSessionLink(String sessionLink) {
-        this.sessionLink = sessionLink;
-    }
-
-    public void setPlatform(String platform) {
-        this.platform = platform;
-    }
-
-    public void setCoordinator(Users coordinator) {
-        this.coordinator = coordinator;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public void setEventDate(Date eventDate) {
-        this.eventDate = eventDate;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public String getTimePeriod() {
-        return timePeriod;
-    }
-
-    public String getSessionLink() {
-        return sessionLink;
-    }
-
-    public String getPlatform() {
-        return platform;
-    }
-
-    public Users getCoordinator() {
-        return coordinator;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public Date getEventDate() {
-        return eventDate;
-    }
-
-    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Attendance> attendances = new HashSet<>();
-
-    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<StudentEvent> studentEvents = new HashSet<>();
-
-    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<BatchEvent> batchEvents = new HashSet<>();
-
+//    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private Set<Attendance> attendances = new HashSet<>();
+//
+//    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private Set<StudentEvent> studentEvents = new HashSet<>();
+//
+//    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private Set<BatchEvent> batchEvents = new HashSet<>();
 }
