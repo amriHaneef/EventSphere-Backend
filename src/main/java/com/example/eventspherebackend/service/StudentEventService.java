@@ -34,7 +34,7 @@ public class StudentEventService {
     }
 
     //get all students assigned to an event
-    public List<UsersDTO> getAsignedStudents(Long id) {
+    public List<UsersDTO> getAsignedStudents(int id) {
         List<StudentEvent> studentEventList = StudentEventRepository.findStudentByEventId(id);
         List<UsersDTO> studentList = new ArrayList<>();
         for (StudentEvent studentEvent : studentEventList) {
@@ -47,7 +47,7 @@ public class StudentEventService {
 
     @Transactional
     public void removeStudent(String eventId, String studentId) {
-        StudentEventRepository.deleteByEventIdAndStudentId(Integer.parseInt(eventId), Long.getLong(studentId));
+        StudentEventRepository.deleteByEventIdAndStudentId(Integer.parseInt(eventId), Integer.parseInt(studentId));
     }
 
     // Helper method to convert Users to UsersDTO

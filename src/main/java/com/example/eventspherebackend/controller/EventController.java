@@ -94,7 +94,7 @@ public class EventController {
     }
 
     @GetMapping("/getEventStudents")
-    public ResponseEntity<?> getStudentEvents(@RequestParam("eventId") Long eventId) {
+    public ResponseEntity<?> getStudentEvents(@RequestParam("eventId") int eventId) {
         try {
             List<UsersDTO> events = studentEventService.getAsignedStudents(eventId);
             return ResponseEntity.ok(events);

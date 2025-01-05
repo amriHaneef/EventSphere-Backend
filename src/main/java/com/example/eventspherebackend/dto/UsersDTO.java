@@ -5,7 +5,7 @@ import java.util.Date;
 
 public class UsersDTO {
 
-    private Long id;
+    private int id;
     private String username;
     private String role;
     private String name;
@@ -17,11 +17,11 @@ public class UsersDTO {
     private LocalDateTime updatedAt;
 
     // Getters and Setters
-    public Long getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(int id) {
         this.id = id;
     }
 

@@ -7,7 +7,7 @@ public class BatchDTO {
 
     private int id;
     private String name;
-    private Long consultantId;
+    private int consultantId;
     private String consultantName;
     private Date startDate;
     private LocalDateTime createdAt;
@@ -31,11 +31,11 @@ public class BatchDTO {
         this.name = name;
     }
 
-    public Long getConsultantId() {
+    public int getConsultantId() {
         return consultantId;
     }
 
-    public void setConsultantId(Long consultantId) {
+    public void setConsultantId(int consultantId) {
         this.consultantId = consultantId;
     }
 

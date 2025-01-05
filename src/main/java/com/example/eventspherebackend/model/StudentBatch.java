@@ -7,8 +7,8 @@ import java.time.LocalDateTime;
 @Table(name = "students_batches")
 public class StudentBatch {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
 
     @ManyToOne
     @JoinColumn(name = "student_id", nullable = false)
@@ -22,7 +22,7 @@ public class StudentBatch {
     private LocalDateTime createdAt = LocalDateTime.now();
 
     public String getId() {
-        return id;
+        return String.valueOf(id);
     }
 
     public Users getStudent() {

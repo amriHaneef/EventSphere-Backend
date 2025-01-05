@@ -8,10 +8,9 @@ import java.util.List;
 
 public interface StudentEventRepository extends JpaRepository<StudentEvent, String> {
 
-    List<StudentEvent> findByStudentId(Long studentId);
     List<StudentEvent> findByStudentUsernameAndEventEventDate(String username,Date eventDate);
 
-    List<StudentEvent> findStudentByEventId(Long id);
+    List<StudentEvent> findStudentByEventId(int id);
 
-    void deleteByEventIdAndStudentId(int eventId, Long studentId);
+    void deleteByEventIdAndStudentId(int eventId, int studentId);
 }
