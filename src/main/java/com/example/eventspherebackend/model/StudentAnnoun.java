@@ -9,25 +9,22 @@ import java.time.LocalDateTime;
 @Setter
 @Getter
 @Entity
-@Table(name = "attendance")
-public class Attendance {
+@Table(name = "student_announcements")
+public class StudentAnnoun {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
 
     @ManyToOne
-    @JoinColumn(name = "event_id")
-    private Event event;
+    @JoinColumn(name = "announcement_id", nullable = false)
+    private Announcement announcement;
 
     @ManyToOne
-    @JoinColumn(name = "student_id")
+    @JoinColumn(name = "student_id", nullable = false)
     private Users student;
-
-    private String attendanceStatus = "absent";
-    private Integer marks;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    // Getters and Setters
 }

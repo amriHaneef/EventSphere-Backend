@@ -1,22 +1,25 @@
 package com.example.eventspherebackend.model;
+
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-@Getter
 @Setter
+@Getter
 @Entity
-@Table(name = "students_batches")
-public class StudentBatch {
+@Table(name = "batch_announcements")
+public class BatchAnnoun {
+
+    // Getters and Setters
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "student_id", nullable = false)
-    private Users student;
+    @JoinColumn(name = "announcement_id", nullable = false)
+    private Announcement announcement;
 
     @ManyToOne
     @JoinColumn(name = "batch_id", nullable = false)
@@ -24,9 +27,5 @@ public class StudentBatch {
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
-
-    public String getId() {
-        return String.valueOf(id);
-    }
 
 }

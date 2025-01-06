@@ -1,8 +1,13 @@
 package com.example.eventspherebackend.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.LocalDateTime;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "batch_events")
 public class BatchEvent {
@@ -25,31 +30,9 @@ public class BatchEvent {
         this.id = Integer.parseInt(id);
     }
 
-    public void setBatch(Batch batch) {
-        this.batch = batch;
-    }
-
-    public void setEvent(Event event) {
-        this.event = event;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
     public String getId() {
         return String.valueOf(id);
     }
 
-    public Batch getBatch() {
-        return batch;
-    }
 
-    public Event getEvent() {
-        return event;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
 }

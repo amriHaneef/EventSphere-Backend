@@ -1,8 +1,13 @@
 package com.example.eventspherebackend.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.LocalDateTime;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "student_events")
 public class StudentEvent {
@@ -41,15 +46,4 @@ public class StudentEvent {
         this.id = Integer.parseInt(id);
     }
 
-    public void setStudent(Users student) {
-        this.student = student;
-    }
-
-    public void setEvent(Event event) {
-        this.event = event;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
 }

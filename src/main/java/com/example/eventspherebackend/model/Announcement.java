@@ -1,15 +1,21 @@
 package com.example.eventspherebackend.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
+@Setter
+@Getter
 @Entity
 @Table(name = "announcements")
 public class Announcement {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
 
     @Column(nullable = false)
     private String title;
@@ -17,17 +23,20 @@ public class Announcement {
     @Column(nullable = false)
     private String content;
 
-    @Column(nullable = false)
-    private String targetAudience;
-
-    @Column(nullable = false)
-    private String targetIds;
-
-    @Column(nullable = false)
-    private String role;
-
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    // Getters and Setters
+    @Column(nullable = false)
+    private String createdBy;
+
+    @Column
+    private String role;
+
+    @OneToMany(mappedBy = "announcement", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<StudentAnnoun> studentAnnouncements = new HashSet<>();
+
+    @OneToMany(mappedBy = "announcement", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<BatchAnnoun> batchAnnouncements = new HashSet<>();
+
+
 }
