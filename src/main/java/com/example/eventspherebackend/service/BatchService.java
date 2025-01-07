@@ -53,18 +53,26 @@ public class BatchService {
         batchRepository.deleteById(id);
     }
 
+    public BatchDTO getBatchByConsultantId(String consultantId) {
+        Batch batch = batchRepository.findByConsultantId(Integer.parseInt(consultantId));
+        return toDTO(batch);
+    }
+
     public Batch toEntity(BatchDTO dto) {
         Batch batch = new Batch();
-        batch.setId(dto.getId());
         batch.setName(dto.getName());
         batch.setConsultant(userRepository.findById(String.valueOf(dto.getConsultantId())).orElse(null));
         batch.setStartDate(dto.getStartDate());
-        batch.setCreatedAt(dto.getCreatedAt());
         batch.setUpdatedAt(dto.getUpdatedAt());
         batch.setStatus(dto.getStatus());
 
+        if(String.valueOf(dto.getId()) != null) {
+            batch.setId(dto.getId());
+        }
+
         return batch;
     }
+
 
     public static BatchDTO toDTO(Batch batch) {
         BatchDTO dto = new BatchDTO();
