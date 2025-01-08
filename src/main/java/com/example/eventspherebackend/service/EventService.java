@@ -1,6 +1,7 @@
 package com.example.eventspherebackend.service;
 
 import com.example.eventspherebackend.dto.EventDTO;
+import com.example.eventspherebackend.dto.FeedbackDTO;
 import com.example.eventspherebackend.model.*;
 import com.example.eventspherebackend.repository.*;
 import com.example.eventspherebackend.util.JwtUtil;
@@ -19,14 +20,16 @@ public class EventService {
     final private UserRepository UserRepository;
     final private BatchEventRepository BatchEventRepository;
     final private StudentBatchRepository StudentBatchRepository;
+    final private FeedbackRepository FeedbackRepository;
 
 
-    public EventService(EventRepository eventRepository,StudentEventRepository studentEventRepository,UserRepository userRepository,BatchEventRepository batchEventRepository,StudentBatchRepository studentBatchRepository) {
+    public EventService(EventRepository eventRepository, StudentEventRepository studentEventRepository, UserRepository userRepository, BatchEventRepository batchEventRepository, StudentBatchRepository studentBatchRepository, com.example.eventspherebackend.repository.FeedbackRepository feedbackRepository) {
         EventRepository = eventRepository;
         StudentEventRepository = studentEventRepository;
         UserRepository = userRepository;
         BatchEventRepository = batchEventRepository;
         StudentBatchRepository = studentBatchRepository;
+        FeedbackRepository = feedbackRepository;
     }
 
     public List<EventDTO> getAllEvents(Date eventDate) {
@@ -135,6 +138,27 @@ public class EventService {
 
     public void deleteEvent(int id) {
         EventRepository.deleteById(String.valueOf(id));
+    }
+
+    //add feedback to event
+    public void addFeedback(String eventId, String targettype, String feedback) {
+        Feedback feedback1 = new Feedback();
+        feedback1.setEvent(EventRepository.findById(eventId).orElse(null));
+        feedback1.setFeedback(feedback);
+        feedback1.setTargetType(targettype);
+    }
+
+    //get all feedbacks for an event
+    public List<FeedbackDTO> getFeedbacksForEvent(String eventId) {
+        return FeedbackRepository.findById(eventId).stream()
+                .map(feedback -> {
+                    FeedbackDTO feedbackDTO = new FeedbackDTO();
+                    feedbackDTO.setEventId(feedback.getEvent().getId());
+                    feedbackDTO.setFeedback(feedback.getFeedback());
+                    feedbackDTO.setTargetType(feedback.getTargetType());
+                    return feedbackDTO;
+                })
+                .collect(Collectors.toList());
     }
 
 

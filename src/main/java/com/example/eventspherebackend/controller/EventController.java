@@ -2,6 +2,7 @@ package com.example.eventspherebackend.controller;
 
 import com.example.eventspherebackend.dto.BatchDTO;
 import com.example.eventspherebackend.dto.EventDTO;
+import com.example.eventspherebackend.dto.FeedbackDTO;
 import com.example.eventspherebackend.dto.UsersDTO;
 import com.example.eventspherebackend.service.BatchEventService;
 import com.example.eventspherebackend.service.EventService;
@@ -107,6 +108,22 @@ public class EventController {
     public String removeStudent(@RequestBody Map<String, String> request) {
         studentEventService.removeStudent(request.get("eventId"), request.get("studentId"));
         return "Student removed successfully";
+    }
+
+    @PostMapping("/addFeedback")
+    public String addFeedback(@RequestBody Map<String, String> request) {
+        eventService.addFeedback(request.get("eventId"), request.get("targetType"), request.get("feedback"));
+        return "Feedback added successfully";
+    }
+
+    @GetMapping("/getFeedbacks")
+    public ResponseEntity<?> getFeedbacks(@RequestParam("eventId") String eventId) {
+        try {
+            List<FeedbackDTO> feedbacks = eventService.getFeedbacksForEvent(eventId);
+            return ResponseEntity.ok(feedbacks);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
     }
 
 }
