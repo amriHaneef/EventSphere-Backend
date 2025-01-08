@@ -3,7 +3,6 @@ package com.example.eventspherebackend.controller;
 import com.example.eventspherebackend.dto.BatchDTO;
 import com.example.eventspherebackend.dto.EventDTO;
 import com.example.eventspherebackend.dto.UsersDTO;
-import com.example.eventspherebackend.model.Batch;
 import com.example.eventspherebackend.service.BatchEventService;
 import com.example.eventspherebackend.service.EventService;
 import com.example.eventspherebackend.service.StudentEventService;
@@ -109,6 +108,5 @@ public class EventController {
         studentEventService.removeStudent(request.get("eventId"), request.get("studentId"));
         return "Student removed successfully";
     }
-
 
 }
