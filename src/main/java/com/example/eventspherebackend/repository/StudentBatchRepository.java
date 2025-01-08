@@ -11,4 +11,6 @@ public interface StudentBatchRepository extends JpaRepository<StudentBatch, Stri
     StudentBatch findByStudentUsername(String username);
 
     void deleteByBatchIdAndStudentId(int batchid, int studentId);
+
+    List<StudentBatch> findByBatchId(int batchId);
 }
