@@ -146,19 +146,23 @@ public class EventService {
         feedback1.setEvent(EventRepository.findById(eventId).orElse(null));
         feedback1.setFeedback(feedback);
         feedback1.setTargetType(targettype);
+
+        FeedbackRepository.save(feedback1);
     }
 
     //get all feedbacks for an event
     public List<FeedbackDTO> getFeedbacksForEvent(String eventId) {
-        return FeedbackRepository.findById(eventId).stream()
-                .map(feedback -> {
-                    FeedbackDTO feedbackDTO = new FeedbackDTO();
-                    feedbackDTO.setEventId(feedback.getEvent().getId());
-                    feedbackDTO.setFeedback(feedback.getFeedback());
-                    feedbackDTO.setTargetType(feedback.getTargetType());
-                    return feedbackDTO;
-                })
-                .collect(Collectors.toList());
+        List<Feedback> feedbackList = FeedbackRepository.findByEventId(Integer.parseInt(eventId));
+        List<FeedbackDTO> feedbackDTOList = new ArrayList<>();
+        for (Feedback feedback : feedbackList) {
+            FeedbackDTO feedbackDTO = new FeedbackDTO();
+            feedbackDTO.setFeedbackId(String.valueOf(feedback.getId()));
+            feedbackDTO.setEventId(feedback.getEvent().getId());
+            feedbackDTO.setFeedback(feedback.getFeedback());
+            feedbackDTO.setTargetType(feedback.getTargetType());
+            feedbackDTOList.add(feedbackDTO);
+        }
+        return feedbackDTOList;
     }
 
 
