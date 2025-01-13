@@ -2,6 +2,7 @@ package com.example.eventspherebackend.service;
 
 import com.example.eventspherebackend.dto.EventDTO;
 import com.example.eventspherebackend.dto.FeedbackDTO;
+import com.example.eventspherebackend.dto.UsersDTO;
 import com.example.eventspherebackend.model.*;
 import com.example.eventspherebackend.repository.*;
 import com.example.eventspherebackend.util.JwtUtil;
@@ -140,6 +141,20 @@ public class EventService {
         EventRepository.deleteById(String.valueOf(id));
     }
 
+    //get assined student from batch
+    public List<UsersDTO> getBatchStudent(int eventId)
+    {
+        List<Users> users = EventRepository.findDistinctBatchEventsBatchStudentBatchesStudentById(eventId);
+        List<UsersDTO> usersDTOS = new ArrayList<>();
+
+        for(Users user : users)
+        {
+            usersDTOS.add(toDto(user));
+        }
+
+        return usersDTOS;
+    }
+
     //add feedback to event
     public void addFeedback(String eventId, String targettype, String feedback) {
         Feedback feedback1 = new Feedback();
@@ -163,6 +178,18 @@ public class EventService {
             feedbackDTOList.add(feedbackDTO);
         }
         return feedbackDTOList;
+    }
+
+    private UsersDTO toDto(Users user)
+    {
+        UsersDTO dto = new UsersDTO();
+        dto.setId(user.getId());
+        dto.setUsername(user.getUsername());
+        dto.setName(user.getName());
+        dto.setEmail(user.getEmail());
+        dto.setRole(user.getRole());
+        dto.setStatus(user.getStatus());
+        return dto;
     }
 
 

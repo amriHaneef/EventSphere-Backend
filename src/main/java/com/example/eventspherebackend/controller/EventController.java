@@ -96,8 +96,11 @@ public class EventController {
     @GetMapping("/getEventStudents")
     public ResponseEntity<?> getStudentEvents(@RequestParam("eventId") int eventId) {
         try {
-            List<UsersDTO> events = studentEventService.getAsignedStudents(eventId);
-            return ResponseEntity.ok(events);
+            List<UsersDTO> students = studentEventService.getAsignedStudents(eventId);
+
+            students.add((UsersDTO) eventService.getBatchStudent(eventId));
+
+            return ResponseEntity.ok(students);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
