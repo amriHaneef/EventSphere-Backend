@@ -1,5 +1,6 @@
 package com.example.eventspherebackend.service;
 
+import com.example.eventspherebackend.dto.AttendenceDTO;
 import com.example.eventspherebackend.dto.EventDTO;
 import com.example.eventspherebackend.dto.FeedbackDTO;
 import com.example.eventspherebackend.dto.UsersDTO;
@@ -22,15 +23,17 @@ public class EventService {
     final private BatchEventRepository BatchEventRepository;
     final private StudentBatchRepository StudentBatchRepository;
     final private FeedbackRepository FeedbackRepository;
+    final private AttendanceRepository attendanceRepository;
 
 
-    public EventService(EventRepository eventRepository, StudentEventRepository studentEventRepository, UserRepository userRepository, BatchEventRepository batchEventRepository, StudentBatchRepository studentBatchRepository, com.example.eventspherebackend.repository.FeedbackRepository feedbackRepository) {
+    public EventService(EventRepository eventRepository, StudentEventRepository studentEventRepository, UserRepository userRepository, BatchEventRepository batchEventRepository, StudentBatchRepository studentBatchRepository, com.example.eventspherebackend.repository.FeedbackRepository feedbackRepository, AttendanceRepository attendanceRepository) {
         EventRepository = eventRepository;
         StudentEventRepository = studentEventRepository;
         UserRepository = userRepository;
         BatchEventRepository = batchEventRepository;
         StudentBatchRepository = studentBatchRepository;
         FeedbackRepository = feedbackRepository;
+        this.attendanceRepository = attendanceRepository;
     }
 
     public List<EventDTO> getAllEvents(Date eventDate) {
@@ -144,15 +147,18 @@ public class EventService {
     //get assined student from batch
     public List<UsersDTO> getBatchStudent(int eventId)
     {
-        List<Users> users = EventRepository.findDistinctBatchEventsBatchStudentBatchesStudentById(eventId);
-        List<UsersDTO> usersDTOS = new ArrayList<>();
+        List<BatchEvent> eventBatches = BatchEventRepository.findBatchByEventId(eventId);
+        List<Batch> batches = eventBatches.stream().map(BatchEvent::getBatch).collect(Collectors.toList());
+        List<StudentBatch> studentBatches = List.of();
 
-        for(Users user : users)
-        {
-            usersDTOS.add(toDto(user));
+        for(Batch batch : batches) {
+            studentBatches = StudentBatchRepository.findByBatchId(batch.getId());
         }
 
+        List<Users> users = studentBatches.stream().map(StudentBatch::getStudent).collect(Collectors.toList());
+        List<UsersDTO> usersDTOS = users.stream().map(this::toDto).collect(Collectors.toList());
         return usersDTOS;
+
     }
 
     //add feedback to event

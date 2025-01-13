@@ -12,8 +12,8 @@ import java.time.LocalDateTime;
 @Table(name = "attendance")
 public class Attendance {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
 
     @ManyToOne
     @JoinColumn(name = "event_id")
@@ -24,10 +24,10 @@ public class Attendance {
     private Users student;
 
     private String attendanceStatus = "absent";
-    private Integer marks;
+
+    private float marks;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    // Getters and Setters
 }
