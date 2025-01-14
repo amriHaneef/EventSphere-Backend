@@ -1,5 +1,6 @@
 package com.example.eventspherebackend.service;
 
+import com.example.eventspherebackend.dto.UsersDTO;
 import com.example.eventspherebackend.model.Users;
 import com.example.eventspherebackend.repository.UserRepository;
 import com.example.eventspherebackend.util.JwtUtil;
@@ -17,6 +18,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -45,12 +49,36 @@ public UserService(AuthenticationManager authenticationManager, UserRepository u
         return userDetails;
     }
 
-    public Users registerUser(Users users) {
-
-        users.setPassword(passwordEncoder.encode(users.getPassword()));
+    //add user
+    public Users registerUser(UsersDTO usersDto) {
+        Users users = toEntity(usersDto);
         return userRepository.save(users);
     }
 
+    //update user
+    public Users updateUser(UsersDTO usersDto) {
+        Users users = toEntity(usersDto);
+        return userRepository.save(users);
+    }
+
+    //remove user
+    public void removeUser(String id) {
+        userRepository.deleteById(id);
+    }
+
+    //get user by id
+    public UsersDTO getUserById(String id) {
+        Users user = userRepository.findById(id).orElse(null);
+        return toDto(user);
+    }
+
+    //get all users
+    public List<UsersDTO> getAllUsers() {
+        List<Users> users = userRepository.findAll();
+        return users.stream().map(this::toDto).collect(Collectors.toList());
+    }
+
+    //verify user
     public String verifyUser(String username, String password) {
 
         try {
@@ -75,12 +103,61 @@ public UserService(AuthenticationManager authenticationManager, UserRepository u
         return "fail";
     }
 
+    //get user role
     public String getUserRole(String username) {
         Users user = userRepository.findByUsername(username);
         if (user == null) {
             throw new RuntimeException("User not found: " + username);
         }
         return user.getRole();
+    }
+
+
+    //convert entity to dto
+    public UsersDTO toDto(Users user) {
+        if (user == null) {
+            return null;
+        }
+
+        UsersDTO dto = new UsersDTO();
+        dto.setId(user.getId());
+        dto.setUsername(user.getUsername());
+        dto.setRole(user.getRole());
+        dto.setName(user.getName());
+        dto.setEmail(user.getEmail());
+        dto.setDob(user.getDob());
+        dto.setAge(user.getAge());
+        dto.setStatus(user.getStatus());
+        dto.setCreatedAt(user.getCreatedAt());
+        dto.setUpdatedAt(user.getUpdatedAt());
+        return dto;
+    }
+
+    //convert dto to entity
+    public Users toEntity(UsersDTO dto) {
+        if (dto == null) {
+            return null;
+        }
+
+        Users user = new Users();
+        if(dto.getPassword() != null) {
+            user.setPassword(passwordEncoder.encode(dto.getPassword()));
+        }
+
+        if(String.valueOf(dto.getId()) != null) {
+            user.setId(dto.getId());
+        }
+
+        user.setUsername(dto.getUsername());
+        user.setRole(dto.getRole());
+        user.setName(dto.getName());
+        user.setEmail(dto.getEmail());
+        user.setDob(dto.getDob());
+        user.setAge(dto.getAge());
+        user.setStatus(dto.getStatus());
+        user.setCreatedAt(dto.getCreatedAt());
+        user.setUpdatedAt(dto.getUpdatedAt());
+        return user;
     }
 
 }

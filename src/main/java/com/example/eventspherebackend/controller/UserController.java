@@ -1,5 +1,6 @@
 package com.example.eventspherebackend.controller;
 
+import com.example.eventspherebackend.dto.UsersDTO;
 import com.example.eventspherebackend.model.Users;
 import com.example.eventspherebackend.service.CustomUserDetailsService;
 import com.example.eventspherebackend.service.UserService;
@@ -12,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/user")
 public class UserController {
     private final AuthenticationManager authenticationManager;
     private final CustomUserDetailsService customUserDetailsService;
@@ -39,23 +40,15 @@ public class UserController {
         }
 
         // Return the generated token
-        return ResponseEntity.ok(Map.of("token", token));
+        return ResponseEntity.ok(Map.of("token:", token + " role:" + jwtUtil.getRoleFromToken(token)));
     }
 
     @PostMapping("/register")
     @PreAuthorize("hasRole('Admin')")
-    public ResponseEntity<?> register(@RequestBody Map<String, String> registrationRequest) {
+    public ResponseEntity<?> register(@RequestBody UsersDTO usersDTO) {
         try {
-            String username = registrationRequest.get("username");
-            String password = registrationRequest.get("password");
-            String role = registrationRequest.get("role");
-            String name = registrationRequest.get("name");
-
-            // Create a new Users object
-            Users user = new Users(username, password, role,name); // No `id` required
-
             // Register the user
-            userService.registerUser(user);
+            userService.registerUser(usersDTO);
 
             return ResponseEntity.ok(Map.of("message", "User registered successfully"));
         }
@@ -64,15 +57,81 @@ public class UserController {
 
         }
     }
+
+    @PutMapping("/update")
+    @PreAuthorize("hasRole('Admin')")
+    public ResponseEntity<?> update(@RequestBody UsersDTO usersDTO) {
+        try {
+            // Update the user
+            userService.updateUser(usersDTO);
+
+            return ResponseEntity.ok(Map.of("message", "User updated successfully"));
+        }
+        catch (Exception e){
+            return ResponseEntity.ok(Map.of("error: ", e.getMessage()));
+
+        }
+    }
+
+    @PostMapping("/remove")
+    @PreAuthorize("hasRole('Admin')")
+    public ResponseEntity<?> remove(@RequestParam int userId) {
+        try {
+            // Remove the user
+            userService.removeUser(String.valueOf(userId));
+
+            return ResponseEntity.ok(Map.of("message", "User removed successfully"));
+        }
+        catch (Exception e){
+            return ResponseEntity.ok(Map.of("error: ", e.getMessage()));
+
+        }
+    }
+
+    @GetMapping("/getAll")
+    @PreAuthorize("hasRole('Admin')")
+    public ResponseEntity<?> getAll() {
+        try {
+            // Get all users
+            return ResponseEntity.ok(userService.getAllUsers());
+        }
+        catch (Exception e){
+            return ResponseEntity.ok(Map.of("error: ", e.getMessage()));
+
+        }
+    }
+
+    @GetMapping("/getById")
+    @PreAuthorize("hasRole('Admin')")
+    public ResponseEntity<?> getById(@RequestParam int userId) {
+        try {
+            // Get user by ID
+            return ResponseEntity.ok(userService.getUserById(String.valueOf(userId)));
+        }
+        catch (Exception e){
+            return ResponseEntity.ok(Map.of("error: ", e.getMessage()));
+
+        }
+    }
+
+
+    //logout
     @PostMapping("/logout")
-    public ResponseEntity<?> logout() {
-        return ResponseEntity.ok(Map.of("message", "User logged out successfully"));
+    public ResponseEntity<String> logout(@RequestHeader("Authorization") String authorizationHeader) {
+        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+            return ResponseEntity.badRequest().body("Invalid token");
+        }
+        String token = authorizationHeader.substring(7); // Remove "Bearer " prefix
+        jwtUtil.blacklistToken(token);
+        return ResponseEntity.ok("Logged out successfully");
     }
 
     @GetMapping("/message")
     public String getMessage() {
         return ("Hello, this is a simple message");
     }
+
+
 
 
 }

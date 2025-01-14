@@ -36,30 +36,39 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         String authorizationHeader = request.getHeader("Authorization");
 
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            String token = authorizationHeader.substring(7); // Extract token
-            String username = jwtTokenUtil.getUsernameFromToken(token); // Get username from token
-
-            jwtTokenUtil.getRoleFromToken(token);
-            jwtTokenUtil.username = username;
+            String token = authorizationHeader.substring(7);
 
 
-            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                UserDetails userDetails = userDetailsService.loadUserByUsername(username); // Load user details
-
-
-                // Validate the token
-                if (jwtTokenUtil.validateToken(token)) {
-                    // Set the authentication context for the user
-                    UsernamePasswordAuthenticationToken authentication =
-                            new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-                    // Set the authentication in the SecurityContext
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
+            try {
+                if (jwtTokenUtil.isTokenBlacklisted(token)) {
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    response.getWriter().write("Token is invalid or expired");
+                    return;
                 }
+
+                String username = jwtTokenUtil.getUsernameFromToken(token);
+
+                jwtTokenUtil.getRoleFromToken(token);
+                jwtTokenUtil.username = username;
+
+                if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                    UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+                    if (jwtTokenUtil.validateToken(token)) {
+                        UsernamePasswordAuthenticationToken authentication =
+                                new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                        SecurityContextHolder.getContext().setAuthentication(authentication);
+                    }
+                }
+            } catch (Exception e) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.getWriter().write("Invalid token");
+                return;
             }
         }
 
-        filterChain.doFilter(request, response); // Continue the filter chain
+        filterChain.doFilter(request, response);
     }
+
 }

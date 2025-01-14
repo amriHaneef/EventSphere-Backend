@@ -10,6 +10,8 @@ import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
 import java.util.Base64;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.Function;
 
 @Component
@@ -76,7 +78,19 @@ public class JwtUtil {
     }
 
     // Get the role from the token
-    public void getRoleFromToken(String token) {
+    public String getRoleFromToken(String token) {
         role = extractClaim(token, claims -> claims.get("role", String.class));
+        return role;
+    }
+
+    //blacklist token
+    private final Set<String> blacklist = new HashSet<>();
+
+    public void blacklistToken(String token) {
+        blacklist.add(token);
+    }
+
+    public boolean isTokenBlacklisted(String token) {
+        return blacklist.contains(token);
     }
 }

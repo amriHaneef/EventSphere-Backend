@@ -49,7 +49,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtRequestFilter jwtRequestFilter) throws Exception {
         http
                 .csrf(csrf -> csrf.disable()).authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/login", "/auth/register")
+                        .requestMatchers("/user/login", "/auth/register")
                         .permitAll() // Allow open access to these paths
                         .anyRequest().authenticated() // All other requests require authentication
                 )
