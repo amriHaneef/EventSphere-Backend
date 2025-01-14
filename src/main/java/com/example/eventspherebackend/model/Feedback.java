@@ -12,14 +12,15 @@ import java.time.LocalDateTime;
 @Table(name = "feedback")
 public class Feedback {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
 
     @Column(nullable = false)
     private String targetType;
 
-    @Column(nullable = false)
-    private String targetId;
+    @ManyToOne
+    @JoinColumn(name = "eventId", nullable = false)
+    private Event event;
 
     private String feedback;
 

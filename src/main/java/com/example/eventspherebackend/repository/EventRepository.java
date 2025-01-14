@@ -1,6 +1,7 @@
 package com.example.eventspherebackend.repository;
 
 import com.example.eventspherebackend.model.Event;
+import com.example.eventspherebackend.model.Users;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Date;
@@ -11,5 +12,7 @@ public interface EventRepository extends JpaRepository<Event, String> {
     List<Event> findByEventDate(Date eventDate);
 
     List<Event> findByCoordinatorUsernameAndEventDate(String username,Date eventDate);
+
+    List<Users> findDistinctBatchEventsBatchStudentBatchesStudentById(int eventId);
 
 }

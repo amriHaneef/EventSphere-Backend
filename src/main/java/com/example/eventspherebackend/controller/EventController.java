@@ -1,8 +1,7 @@
 package com.example.eventspherebackend.controller;
 
-import com.example.eventspherebackend.dto.BatchDTO;
-import com.example.eventspherebackend.dto.EventDTO;
-import com.example.eventspherebackend.dto.UsersDTO;
+import com.example.eventspherebackend.dto.*;
+import com.example.eventspherebackend.service.AttendanceService;
 import com.example.eventspherebackend.service.BatchEventService;
 import com.example.eventspherebackend.service.EventService;
 import com.example.eventspherebackend.service.StudentEventService;
@@ -22,11 +21,13 @@ public class EventController {
     private final EventService eventService;
     private final BatchEventService batchEventService;
     private final StudentEventService studentEventService;
+    private final AttendanceService attendanceService;
 
-    public EventController(EventService eventService, BatchEventService batchEventService, StudentEventService studentEventService) {
+    public EventController(EventService eventService, BatchEventService batchEventService, StudentEventService studentEventService, AttendanceService attendanceService) {
         this.eventService = eventService;
         this.batchEventService = batchEventService;
         this.studentEventService = studentEventService;
+        this.attendanceService = attendanceService;
     }
 
     @GetMapping("/getAllEvents")
@@ -95,8 +96,11 @@ public class EventController {
     @GetMapping("/getEventStudents")
     public ResponseEntity<?> getStudentEvents(@RequestParam("eventId") int eventId) {
         try {
-            List<UsersDTO> events = studentEventService.getAsignedStudents(eventId);
-            return ResponseEntity.ok(events);
+            List<UsersDTO> students = studentEventService.getAsignedStudents(eventId);
+
+            students.addAll(eventService.getBatchStudent(eventId));
+
+            return ResponseEntity.ok(students);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
@@ -107,6 +111,45 @@ public class EventController {
     public String removeStudent(@RequestBody Map<String, String> request) {
         studentEventService.removeStudent(request.get("eventId"), request.get("studentId"));
         return "Student removed successfully";
+    }
+
+    @PostMapping("/addFeedback")
+    public String addFeedback(@RequestBody Map<String, String> request) {
+        eventService.addFeedback(request.get("eventId"), request.get("targetType"), request.get("feedback"));
+        return "Feedback added successfully";
+    }
+
+    @GetMapping("/getFeedbacks")
+    public ResponseEntity<?> getFeedbacks(@RequestParam("eventId") String eventId) {
+        try {
+            List<FeedbackDTO> feedbacks = eventService.getFeedbacksForEvent(eventId);
+            return ResponseEntity.ok(feedbacks);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @PostMapping("markAttendance")
+    //@PreAuthorize("hasRole('Teacher')")
+    public String markAttendance(@RequestBody List<AttendenceDTO> attendenceDTO) {
+        attendanceService.markAttendance(attendenceDTO);
+        return "Attendance marked successfully";
+    }
+
+    @GetMapping("/getAttendance")
+    public ResponseEntity<?> getAttendance(@RequestParam("eventId") int eventId) {
+        try {
+            List<AttendenceDTO> attendenceDTO = attendanceService.getAttendanceForEvent(String.valueOf(eventId));
+            return ResponseEntity.ok(attendenceDTO);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @PutMapping("/updateAttendance")
+    public String updateAttendance(@RequestBody List<AttendenceDTO> attendenceDTO) {
+        attendanceService.updateAttendance(attendenceDTO);
+        return "Attendance updated successfully";
     }
 
 }

@@ -1,6 +1,9 @@
 package com.example.eventspherebackend.service;
 
+import com.example.eventspherebackend.dto.AttendenceDTO;
 import com.example.eventspherebackend.dto.EventDTO;
+import com.example.eventspherebackend.dto.FeedbackDTO;
+import com.example.eventspherebackend.dto.UsersDTO;
 import com.example.eventspherebackend.model.*;
 import com.example.eventspherebackend.repository.*;
 import com.example.eventspherebackend.util.JwtUtil;
@@ -19,14 +22,18 @@ public class EventService {
     final private UserRepository UserRepository;
     final private BatchEventRepository BatchEventRepository;
     final private StudentBatchRepository StudentBatchRepository;
+    final private FeedbackRepository FeedbackRepository;
+    final private AttendanceRepository attendanceRepository;
 
 
-    public EventService(EventRepository eventRepository,StudentEventRepository studentEventRepository,UserRepository userRepository,BatchEventRepository batchEventRepository,StudentBatchRepository studentBatchRepository) {
+    public EventService(EventRepository eventRepository, StudentEventRepository studentEventRepository, UserRepository userRepository, BatchEventRepository batchEventRepository, StudentBatchRepository studentBatchRepository, com.example.eventspherebackend.repository.FeedbackRepository feedbackRepository, AttendanceRepository attendanceRepository) {
         EventRepository = eventRepository;
         StudentEventRepository = studentEventRepository;
         UserRepository = userRepository;
         BatchEventRepository = batchEventRepository;
         StudentBatchRepository = studentBatchRepository;
+        FeedbackRepository = feedbackRepository;
+        this.attendanceRepository = attendanceRepository;
     }
 
     public List<EventDTO> getAllEvents(Date eventDate) {
@@ -135,6 +142,60 @@ public class EventService {
 
     public void deleteEvent(int id) {
         EventRepository.deleteById(String.valueOf(id));
+    }
+
+    //get assined student from batch
+    public List<UsersDTO> getBatchStudent(int eventId)
+    {
+        List<BatchEvent> eventBatches = BatchEventRepository.findBatchByEventId(eventId);
+        List<Batch> batches = eventBatches.stream().map(BatchEvent::getBatch).collect(Collectors.toList());
+        List<StudentBatch> studentBatches = List.of();
+
+        for(Batch batch : batches) {
+            studentBatches = StudentBatchRepository.findByBatchId(batch.getId());
+        }
+
+        List<Users> users = studentBatches.stream().map(StudentBatch::getStudent).collect(Collectors.toList());
+        List<UsersDTO> usersDTOS = users.stream().map(this::toDto).collect(Collectors.toList());
+        return usersDTOS;
+
+    }
+
+    //add feedback to event
+    public void addFeedback(String eventId, String targettype, String feedback) {
+        Feedback feedback1 = new Feedback();
+        feedback1.setEvent(EventRepository.findById(eventId).orElse(null));
+        feedback1.setFeedback(feedback);
+        feedback1.setTargetType(targettype);
+
+        FeedbackRepository.save(feedback1);
+    }
+
+    //get all feedbacks for an event
+    public List<FeedbackDTO> getFeedbacksForEvent(String eventId) {
+        List<Feedback> feedbackList = FeedbackRepository.findByEventId(Integer.parseInt(eventId));
+        List<FeedbackDTO> feedbackDTOList = new ArrayList<>();
+        for (Feedback feedback : feedbackList) {
+            FeedbackDTO feedbackDTO = new FeedbackDTO();
+            feedbackDTO.setFeedbackId(String.valueOf(feedback.getId()));
+            feedbackDTO.setEventId(feedback.getEvent().getId());
+            feedbackDTO.setFeedback(feedback.getFeedback());
+            feedbackDTO.setTargetType(feedback.getTargetType());
+            feedbackDTOList.add(feedbackDTO);
+        }
+        return feedbackDTOList;
+    }
+
+    private UsersDTO toDto(Users user)
+    {
+        UsersDTO dto = new UsersDTO();
+        dto.setId(user.getId());
+        dto.setUsername(user.getUsername());
+        dto.setName(user.getName());
+        dto.setEmail(user.getEmail());
+        dto.setRole(user.getRole());
+        dto.setStatus(user.getStatus());
+        return dto;
     }
 
 
