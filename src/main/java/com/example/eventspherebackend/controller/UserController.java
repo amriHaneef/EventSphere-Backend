@@ -1,5 +1,6 @@
 package com.example.eventspherebackend.controller;
 
+import com.example.eventspherebackend.dto.PortfolioDTO;
 import com.example.eventspherebackend.dto.UsersDTO;
 import com.example.eventspherebackend.model.Users;
 import com.example.eventspherebackend.service.CustomUserDetailsService;
@@ -131,7 +132,32 @@ public class UserController {
         return ("Hello, this is a simple message");
     }
 
+    //portfolio update
+    @PutMapping("/updatePortfolio")
+    public ResponseEntity<?> updatePortfolio(@RequestBody PortfolioDTO portfolioDTO) {
+        try {
+            // Update the user
+            userService.updatePortfolio(portfolioDTO);
 
+            return ResponseEntity.ok(Map.of("message", "Portfolio updated successfully"));
+        }
+        catch (Exception e){
+            return ResponseEntity.ok(Map.of("error: ", e.getMessage()));
 
+        }
+    }
+
+    //get portfolio by user id
+    @GetMapping("/getPortfolioByUserId")
+    public ResponseEntity<?> getPortfolioByUserId(@RequestParam int userId) {
+        try {
+            // Get user by ID
+            return ResponseEntity.ok(userService.getPortfolioByStudentId(userId));
+        }
+        catch (Exception e){
+            return ResponseEntity.ok(Map.of("error: ", e.getMessage()));
+
+        }
+    }
 
 }

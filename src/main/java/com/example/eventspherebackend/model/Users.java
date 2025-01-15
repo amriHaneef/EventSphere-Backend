@@ -75,4 +75,7 @@ public class Users {
 
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<StudentAnnoun> studentAnnouncements = new HashSet<>();
+
+    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Portfolio> portfolios = new HashSet<>();
 }

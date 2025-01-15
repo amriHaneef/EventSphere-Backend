@@ -1,7 +1,10 @@
 package com.example.eventspherebackend.service;
 
+import com.example.eventspherebackend.dto.PortfolioDTO;
 import com.example.eventspherebackend.dto.UsersDTO;
+import com.example.eventspherebackend.model.Portfolio;
 import com.example.eventspherebackend.model.Users;
+import com.example.eventspherebackend.repository.PortfolioRepository;
 import com.example.eventspherebackend.repository.UserRepository;
 import com.example.eventspherebackend.util.JwtUtil;
 import lombok.ToString;
@@ -27,12 +30,14 @@ public class UserService implements UserDetailsService {
 
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
+    private final PortfolioRepository portfolioRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
-public UserService(AuthenticationManager authenticationManager, UserRepository userRepository, PasswordEncoder passwordEncoder, JwtUtil jwtUtil) {
+public UserService(AuthenticationManager authenticationManager, UserRepository userRepository, PortfolioRepository portfolioRepository, PasswordEncoder passwordEncoder, JwtUtil jwtUtil) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
+        this.portfolioRepository = portfolioRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtUtil = jwtUtil;
     }
@@ -50,9 +55,12 @@ public UserService(AuthenticationManager authenticationManager, UserRepository u
     }
 
     //add user
-    public Users registerUser(UsersDTO usersDto) {
+    public void registerUser(UsersDTO usersDto) {
         Users users = toEntity(usersDto);
-        return userRepository.save(users);
+        userRepository.save(users);
+
+        createPortfolio(users);
+
     }
 
     //update user
@@ -112,6 +120,30 @@ public UserService(AuthenticationManager authenticationManager, UserRepository u
         return user.getRole();
     }
 
+    //get user by username
+    public Users getUserByUsername(String username) {
+        return userRepository.findByUsername(username);
+    }
+
+    //portfolio creation
+    public void createPortfolio (Users user) {
+        Portfolio portfolio = new Portfolio();
+        portfolio.setStudent(getUserByUsername(user.getUsername()));
+        portfolioRepository.save(portfolio);
+    }
+
+    //update portfolio
+    public void updatePortfolio(PortfolioDTO portfolioDTO) {
+        Portfolio portfolio = toEntity(portfolioDTO, getUserByUsername(portfolioDTO.getStudentName()));
+        portfolioRepository.save(portfolio);
+    }
+
+    //get portfolio by student id
+    public PortfolioDTO getPortfolioByStudentId(int studentId) {
+        Portfolio portfolio = portfolioRepository.findByStudentId(studentId);
+        return toDto(portfolio);
+    }
+
 
     //convert entity to dto
     public UsersDTO toDto(Users user) {
@@ -159,5 +191,48 @@ public UserService(AuthenticationManager authenticationManager, UserRepository u
         user.setUpdatedAt(dto.getUpdatedAt());
         return user;
     }
+
+    //convert portfolio entity to dto
+    public PortfolioDTO toDto(Portfolio portfolio) {
+        if (portfolio == null) {
+            return null;
+        }
+
+        PortfolioDTO dto = new PortfolioDTO();
+        dto.setId(portfolio.getId());
+        dto.setStudentId(portfolio.getStudent() != null ? portfolio.getStudent().getId() : null);
+        dto.setStudentName(portfolio.getStudent() != null ? portfolio.getStudent().getName() : null);
+        dto.setAchievements(portfolio.getAchievements());
+        dto.setProjects(portfolio.getProjects());
+        dto.setSkills(portfolio.getSkills());
+        dto.setCertifications(portfolio.getCertifications());
+        dto.setGpa(portfolio.getGpa());
+        dto.setCreatedAt(portfolio.getCreatedAt());
+        dto.setUpdatedAt(portfolio.getUpdatedAt());
+
+        return dto;
+    }
+
+    //convert portfolio dto to entity
+    public Portfolio toEntity(PortfolioDTO dto, Users student) {
+        if (dto == null) {
+            return null;
+        }
+
+        Portfolio portfolio = new Portfolio();
+        portfolio.setId(dto.getId());
+        portfolio.setStudent(student); // Assign the student entity
+        portfolio.setAchievements(dto.getAchievements());
+        portfolio.setProjects(dto.getProjects());
+        portfolio.setSkills(dto.getSkills());
+        portfolio.setCertifications(dto.getCertifications());
+        portfolio.setGpa(dto.getGpa());
+        portfolio.setCreatedAt(dto.getCreatedAt());
+        portfolio.setUpdatedAt(dto.getUpdatedAt());
+
+        return portfolio;
+    }
+
+
 
 }
