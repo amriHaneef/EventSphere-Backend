@@ -70,8 +70,8 @@ jobs:
         HOST: ${{ secrets.HOST }}
         USER: ${{ secrets.USER }}
       run: |
-        scp -o StrictHostKeyChecking=no -i private_key.pem target/*.jar $USER@$HOST:/home/$USER/eventFlowBackend.jar
+        scp -o StrictHostKeyChecking=no -i private_key.pem target/*.jar $USER@$HOST:/home/$USER/EventSphere-Backend.jar
         ssh -o StrictHostKeyChecking=no -i private_key.pem $USER@$HOST << EOF
-          pkill -f eventFlowBackend.jar || true
-          nohup java -jar /home/$USER/eventFlowBackend.jar > /home/$USER/eventFlowBackend.log 2>&1 &
+          pkill -f EventSphere-Backend.jar || true
+          nohup java -jar /home/$USER/EventSphere-Backend.jar > /home/$USER/EventSphere-Backend.log 2>&1 &
         EOF
