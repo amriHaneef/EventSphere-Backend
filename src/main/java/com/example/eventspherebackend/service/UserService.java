@@ -223,7 +223,7 @@ public UserService(AuthenticationManager authenticationManager, UserRepository u
         user.setDob(dto.getDob());
         user.setAge(dto.getAge());
         user.setStatus(dto.getStatus());
-        user.setCreatedAt(dto.getCreatedAt());
+//        user.setCreatedAt(dto.getCreatedAt());
         user.setUpdatedAt(dto.getUpdatedAt());
         return user;
     }

@@ -28,149 +28,134 @@ public class UserController {
         this.jwtUtil = jwtUtil;
     }
 
-
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Users users) {
-        String username = users.getUsername();
-        String password = users.getPassword();
+        try {
+            String username = users.getUsername();
+            String password = users.getPassword();
 
-        // Authenticate the user and generate a token
-        String token = userService.verifyUser(username, password);
-        if ("bad credentials".equals(token) || "fail".equals(token)) {
-            return ResponseEntity.status(401).body(Map.of("message", "Invalid username or password"));
+            // Authenticate the user and generate a token
+            String token = userService.verifyUser(username, password);
+            if ("bad credentials".equals(token) || "fail".equals(token)) {
+                return ResponseEntity.status(401).body(Map.of("message", "Invalid username or password"));
+            }
+
+            // Return the generated token
+            return ResponseEntity.ok(Map.of("token", token));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error during login: " + e.getMessage());
         }
-
-        // Return the generated token
-        return ResponseEntity.ok(Map.of("token",token));
     }
 
     @PostMapping("/register")
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> register(@RequestBody UsersDTO usersDTO) {
         try {
             // Register the user
             userService.registerUser(usersDTO);
 
             return ResponseEntity.ok(Map.of("message", "User registered successfully"));
-        }
-        catch (Exception e){
-            return ResponseEntity.ok(Map.of("error: ", e.getMessage()));
-
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error registering user: " + e.getMessage());
         }
     }
 
     @PutMapping("/update")
-    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<?> update(@RequestBody UsersDTO usersDTO) {
         try {
             // Update the user
             userService.updateUser(usersDTO);
 
             return ResponseEntity.ok(Map.of("message", "User updated successfully"));
-        }
-        catch (Exception e){
-            return ResponseEntity.ok(Map.of("error: ", e.getMessage()));
-
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error updating user: " + e.getMessage());
         }
     }
 
-    @PostMapping("/remove")
-    @PreAuthorize("hasRole('Admin')")
+    @DeleteMapping("/remove")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> remove(@RequestParam int userId) {
         try {
             // Remove the user
             userService.removeUser(String.valueOf(userId));
 
             return ResponseEntity.ok(Map.of("message", "User removed successfully"));
-        }
-        catch (Exception e){
-            return ResponseEntity.ok(Map.of("error: ", e.getMessage()));
-
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error removing user: " + e.getMessage());
         }
     }
 
     @GetMapping("/getAll")
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasRole('ADMIN') OR hasRole('TEACHER')")
     public ResponseEntity<?> getAll() {
         try {
             // Get all users
             return ResponseEntity.ok(userService.getAllUsers());
-        }
-        catch (Exception e){
-            return ResponseEntity.ok(Map.of("error: ", e.getMessage()));
-
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error fetching users: " + e.getMessage());
         }
     }
 
     @GetMapping("/getById")
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasRole('ADMIN') OR hasRole('TEACHER')")
     public ResponseEntity<?> getById(@RequestParam int userId) {
         try {
             // Get user by ID
             return ResponseEntity.ok(userService.getUserById(String.valueOf(userId)));
-        }
-        catch (Exception e){
-            return ResponseEntity.ok(Map.of("error: ", e.getMessage()));
-
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error fetching user by ID: " + e.getMessage());
         }
     }
 
-
-    //logout
     @PostMapping("/logout")
-    public ResponseEntity<String> logout(@RequestHeader("Authorization") String authorizationHeader) {
-        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
-            return ResponseEntity.badRequest().body("Invalid token");
+    public ResponseEntity<?> logout(@RequestHeader("Authorization") String authorizationHeader) {
+        try {
+            if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+                return ResponseEntity.badRequest().body("Invalid token");
+            }
+            String token = authorizationHeader.substring(7); // Remove "Bearer " prefix
+            jwtUtil.blacklistToken(token);
+            return ResponseEntity.ok("Logged out successfully");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error during logout: " + e.getMessage());
         }
-        String token = authorizationHeader.substring(7); // Remove "Bearer " prefix
-        jwtUtil.blacklistToken(token);
-        return ResponseEntity.ok("Logged out successfully");
     }
 
     @GetMapping("/message")
-    public String getMessage() {
-        return ("Hello, this is a simple message");
+    public ResponseEntity<?> getMessage() {
+        try {
+            return ResponseEntity.ok("Hello, this is a simple message");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error fetching message: " + e.getMessage());
+        }
     }
 
-    //portfolio update
     @PutMapping("/updatePortfolio")
     public ResponseEntity<?> updatePortfolio(@RequestBody PortfolioDTO portfolioDTO) {
         try {
-            // Update the user
             userService.updatePortfolio(portfolioDTO);
-
             return ResponseEntity.ok(Map.of("message", "Portfolio updated successfully"));
-        }
-        catch (Exception e){
-            return ResponseEntity.ok(Map.of("error: ", e.getMessage()));
-
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error updating portfolio: " + e.getMessage());
         }
     }
 
-    //get portfolio by user id
     @GetMapping("/getPortfolioByUserId")
     public ResponseEntity<?> getPortfolioByUserId(@RequestParam int userId) {
         try {
-            // Get user by ID
             return ResponseEntity.ok(userService.getPortfolioByStudentId(userId));
-        }
-        catch (Exception e){
-            return ResponseEntity.ok(Map.of("error: ", e.getMessage()));
-
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error fetching portfolio: " + e.getMessage());
         }
     }
 
-    //get user by role
     @GetMapping("/getByRole")
+    @PreAuthorize("hasRole('ADMIN') OR hasRole('TEACHER')")
     public ResponseEntity<?> getByRole(@RequestParam String role) {
         try {
-            // Get user by role
             return ResponseEntity.ok(userService.getUserByRole(role));
-        }
-        catch (Exception e){
-            return ResponseEntity.ok(Map.of("error: ", e.getMessage()));
-
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error fetching users by role: " + e.getMessage());
         }
     }
-
 }

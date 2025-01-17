@@ -30,93 +30,142 @@ public class EventController {
         this.attendanceService = attendanceService;
     }
 
+    // Get all events
     @GetMapping("/getAllEvents")
-    public List<EventDTO> getAllEvents(@RequestParam("eventDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date eventDate) {
-        System.out.println("Event Date: " + eventDate);
-        return eventService.getAllEvents(eventDate);
+    public ResponseEntity<?> getAllEvents(@RequestParam("eventDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date eventDate) {
+        try {
+            System.out.println("Event Date: " + eventDate);
+            return ResponseEntity.ok(eventService.getAllEvents(eventDate));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error fetching events: " + e.getMessage());
+        }
     }
 
+    // Get event by ID
     @GetMapping("/getEventById")
-    public EventDTO getEventById(@RequestParam("eventId") String eventId) {
-        return eventService.getEventById(Integer.parseInt(eventId));
+    public ResponseEntity<?> getEventById(@RequestParam("eventId") String eventId) {
+        try {
+            return ResponseEntity.ok(eventService.getEventById(Integer.parseInt(eventId)));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error fetching event by ID: " + e.getMessage());
+        }
     }
 
+    // Add an event
     @PostMapping("/addEvent")
-    @PreAuthorize("hasRole('Teacher')")
-    public String addEvent(@RequestBody EventDTO eventDTO) {
-        eventService.addEvent(eventDTO);
-        return "Event added successfully";
+    @PreAuthorize("hasRole('TEACHER')")
+    public ResponseEntity<?> addEvent(@RequestBody EventDTO eventDTO) {
+        try {
+            eventService.addEvent(eventDTO);
+            return ResponseEntity.ok("Event added successfully");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error adding event: " + e.getMessage());
+        }
     }
 
-    @PostMapping("/updateEvent")
-    @PreAuthorize("hasRole('Teacher')")
-    public String updateEvent(@RequestBody EventDTO eventDTO) {
-        eventService.updateEvent(eventDTO);
-        return "Event updated successfully";
+    // Update an event
+    @PutMapping("/updateEvent")
+    @PreAuthorize("hasRole('TEACHER')")
+    public ResponseEntity<?> updateEvent(@RequestBody EventDTO eventDTO) {
+        try {
+            eventService.updateEvent(eventDTO);
+            return ResponseEntity.ok("Event updated successfully");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error updating event: " + e.getMessage());
+        }
     }
 
-    @PostMapping("/deleteEvent")
-    @PreAuthorize("hasRole('Teacher')")
-    public String deleteEvent(@RequestParam("eventId") String eventId) {
-        eventService.deleteEvent(Integer.parseInt(eventId));
-        return "Event deleted successfully";
+    // Delete an event
+    @DeleteMapping("/deleteEvent")
+    @PreAuthorize("hasRole('TEACHER')")
+    public ResponseEntity<?> deleteEvent(@RequestParam("eventId") String eventId) {
+        try {
+            eventService.deleteEvent(Integer.parseInt(eventId));
+            return ResponseEntity.ok("Event deleted successfully");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error deleting event: " + e.getMessage());
+        }
     }
 
-    @PostMapping("addBatch")
-    @PreAuthorize("hasRole('Teacher')")
-    public String addBatch(@RequestBody EventBatchDTO eventBatchDTO) {
-        batchEventService.assignBatch(eventBatchDTO.getEventId(), eventBatchDTO.getBatchIds());
-        return "Batch added successfully";
+    // Add batch to event
+    @PostMapping("/addBatch")
+    @PreAuthorize("hasRole('TEACHER')")
+    public ResponseEntity<?> addBatch(@RequestBody EventBatchDTO eventBatchDTO) {
+        try {
+            batchEventService.assignBatch(eventBatchDTO.getEventId(), eventBatchDTO.getBatchIds());
+            return ResponseEntity.ok("Batch added successfully");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error adding batch: " + e.getMessage());
+        }
     }
 
+    // Get all batches in an event
     @GetMapping("/getEventBatches")
     public ResponseEntity<?> getBatches(@RequestParam("eventId") int eventId) {
         try {
             List<BatchDTO> batches = batchEventService.getAsignedBatches(eventId);
             return ResponseEntity.ok(batches);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+            return ResponseEntity.badRequest().body("Error fetching batches: " + e.getMessage());
         }
     }
 
-    @PostMapping("/removeBatch")
-    @PreAuthorize("hasRole('Teacher')")
-    public String removeBatch(@RequestBody Map<String, String> request) {
-        batchEventService.removeBatch(request.get("eventId"), request.get("batchId"));
-        return "Batch removed successfully";
+    // Remove batch from event
+    @DeleteMapping("/removeBatch")
+    @PreAuthorize("hasRole('TEACHER')")
+    public ResponseEntity<?> removeBatch(@RequestBody Map<String, String> request) {
+        try {
+            batchEventService.removeBatch(request.get("eventId"), request.get("batchId"));
+            return ResponseEntity.ok("Batch removed successfully");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error removing batch: " + e.getMessage());
+        }
     }
 
+    // Add student to event
     @PostMapping("/addStudent")
-    @PreAuthorize("hasRole('Teacher')")
-    public String addStudent(@RequestBody EventStudentDTO eventStudentDTO) {
-        studentEventService.assignStudent(eventStudentDTO.getEventId(), eventStudentDTO.getStudentIds());
-        return "Student added successfully";
+    @PreAuthorize("hasRole('TEACHER')")
+    public ResponseEntity<?> addStudent(@RequestBody EventStudentDTO eventStudentDTO) {
+        try {
+            studentEventService.assignStudent(eventStudentDTO.getEventId(), eventStudentDTO.getStudentIds());
+            return ResponseEntity.ok("Student added successfully");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error adding student: " + e.getMessage());
+        }
     }
 
+    // Get all students in an event
     @GetMapping("/getEventStudents")
+    @PreAuthorize("hasRole('TEACHER') OR hasRole('ADMIN')")
     public ResponseEntity<?> getStudentEvents(@RequestParam("eventId") int eventId) {
         try {
             List<UsersDTO> students = studentEventService.getAsignedStudents(eventId);
-
             students.addAll(eventService.getBatchStudent(eventId));
-
             return ResponseEntity.ok(students);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+            return ResponseEntity.badRequest().body("Error fetching students: " + e.getMessage());
         }
     }
 
-    @PostMapping("/removeStudent")
-    @PreAuthorize("hasRole('Teacher')")
-    public String removeStudent(@RequestBody Map<String, String> request) {
-        studentEventService.removeStudent(request.get("eventId"), request.get("studentId"));
-        return "Student removed successfully";
+    @DeleteMapping("/removeStudent")
+    @PreAuthorize("hasRole('TEACHER')")
+    public ResponseEntity<?> removeStudent(@RequestBody Map<String, String> request) {
+        try {
+            studentEventService.removeStudent(request.get("eventId"), request.get("studentId"));
+            return ResponseEntity.ok("Student removed successfully");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error removing student: " + e.getMessage());
+        }
     }
 
     @PostMapping("/addFeedback")
-    public String addFeedback(@RequestBody Map<String, String> request) {
-        eventService.addFeedback(request.get("eventId"), request.get("targetType"), request.get("feedback"));
-        return "Feedback added successfully";
+    public ResponseEntity<?> addFeedback(@RequestBody Map<String, String> request) {
+        try {
+            eventService.addFeedback(request.get("eventId"), request.get("targetType"), request.get("feedback"));
+            return ResponseEntity.ok("Feedback added successfully");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error adding feedback: " + e.getMessage());
+        }
     }
 
     @GetMapping("/getFeedbacks")
@@ -125,31 +174,40 @@ public class EventController {
             List<FeedbackDTO> feedbacks = eventService.getFeedbacksForEvent(eventId);
             return ResponseEntity.ok(feedbacks);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+            return ResponseEntity.badRequest().body("Error fetching feedbacks: " + e.getMessage());
         }
     }
 
-    @PostMapping("markAttendance")
-    //@PreAuthorize("hasRole('Teacher')")
-    public String markAttendance(@RequestBody List<AttendenceDTO> attendenceDTO) {
-        attendanceService.markAttendance(attendenceDTO);
-        return "Attendance marked successfully";
+    @PostMapping("/markAttendance")
+    @PreAuthorize("hasRole('TEACHER')")
+    public ResponseEntity<?> markAttendance(@RequestBody List<AttendenceDTO> attendenceDTO) {
+        try {
+            attendanceService.markAttendance(attendenceDTO);
+            return ResponseEntity.ok("Attendance marked successfully");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error marking attendance: " + e.getMessage());
+        }
     }
 
     @GetMapping("/getAttendance")
+    @PreAuthorize("hasRole('TEACHER') OR hasRole('ADMIN')" )
     public ResponseEntity<?> getAttendance(@RequestParam("eventId") int eventId) {
         try {
             List<AttendenceDTO> attendenceDTO = attendanceService.getAttendanceForEvent(String.valueOf(eventId));
             return ResponseEntity.ok(attendenceDTO);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+            return ResponseEntity.badRequest().body("Error fetching attendance: " + e.getMessage());
         }
     }
 
     @PutMapping("/updateAttendance")
-    public String updateAttendance(@RequestBody List<AttendenceDTO> attendenceDTO) {
-        attendanceService.updateAttendance(attendenceDTO);
-        return "Attendance updated successfully";
+    @PreAuthorize("hasRole('TEACHER')")
+    public ResponseEntity<?> updateAttendance(@RequestBody List<AttendenceDTO> attendenceDTO) {
+        try {
+            attendanceService.updateAttendance(attendenceDTO);
+            return ResponseEntity.ok("Attendance updated successfully");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error updating attendance: " + e.getMessage());
+        }
     }
-
 }

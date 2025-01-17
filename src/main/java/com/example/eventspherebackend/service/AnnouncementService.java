@@ -30,7 +30,7 @@ public class AnnouncementService {
 
     public List<AnnouncementDTO> getAllAnnouncements() {
         String role = JwtUtil.role;
-        if (role.equals("Admin")) {
+        if (role.equals("ADMIN")) {
             List<Announcement> announcements = AnnouncementRepository.findAll();;
             List<AnnouncementDTO> announcementDTO = new ArrayList<>();
             for(Announcement announcement : announcements) {
@@ -38,7 +38,7 @@ public class AnnouncementService {
             }
 
             return announcementDTO;
-        } else if (role.equals("Teacher")) {
+        } else if (role.equals("TEACHER")) {
             List<Announcement> announcements = AnnouncementRepository.findByCreatedBy(JwtUtil.username);
             List<AnnouncementDTO> announcementDTO = new ArrayList<>();
             for(Announcement announcement : announcements) {
@@ -46,7 +46,7 @@ public class AnnouncementService {
             }
 
             return announcementDTO;
-        } else {
+        } else if(role.equals("STUDENT")) {
             List<StudentAnnoun> announcements = StudentAnnounRepository.findByStudentUsername(JwtUtil.username);
             List<BatchAnnoun> batchAnnouncements = BatchAnnounRepository.findByBatchId(StudentBatchRepository.findByStudentUsername(JwtUtil.username).getBatch().getId());
 
@@ -60,6 +60,9 @@ public class AnnouncementService {
 
             return announcementDTO;
 
+        }
+        else {
+            return null;
         }
 
     }

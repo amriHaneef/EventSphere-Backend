@@ -2,12 +2,11 @@ package com.example.eventspherebackend.controller;
 
 import com.example.eventspherebackend.dto.*;
 import com.example.eventspherebackend.model.Announcement;
-import com.example.eventspherebackend.model.BatchAnnoun;
-import com.example.eventspherebackend.model.StudentAnnoun;
-import com.example.eventspherebackend.repository.BatchAnnounRepository;
 import com.example.eventspherebackend.service.AnnouncementService;
 import com.example.eventspherebackend.service.BatchAnnounService;
 import com.example.eventspherebackend.service.StudentAnnounService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,74 +14,105 @@ import java.util.List;
 @RestController
 @RequestMapping("/Announcement")
 public class AnnouncementController {
-    final private AnnouncementService AnnouncementService;
+    final private AnnouncementService announcementService;
     final private StudentAnnounService studentAnnounService;
     final private BatchAnnounService batchAnnounService;
 
     public AnnouncementController(AnnouncementService announcementService, StudentAnnounService studentAnnounService, BatchAnnounService batchAnnounService) {
-        AnnouncementService = announcementService;
+        this.announcementService = announcementService;
         this.studentAnnounService = studentAnnounService;
         this.batchAnnounService = batchAnnounService;
     }
 
-    //get all announcements
+    // Get all announcements
     @GetMapping("/getAll")
-    public List<AnnouncementDTO> getAllAnnouncements() {
-
-        return AnnouncementService.getAllAnnouncements();
-    }
-
-    //add an announcement
-    @PostMapping("/add")
-    public String addAnnouncement(@RequestBody AnnouncementDTO announcementDTO) {
+    public ResponseEntity<List<AnnouncementDTO>> getAllAnnouncements() {
         try {
-            AnnouncementService.addAnnouncement(announcementDTO);
-            return "Announcement added successfully";
+            return ResponseEntity.ok(announcementService.getAllAnnouncements());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(null); // Return null on error
         }
-        catch (Exception e) {
-            return "Error adding announcement"+e.getMessage();
-        }
-
     }
 
-    //add student to announcement
+    // Add an announcement
+    @PostMapping("/add")
+    @PreAuthorize("hasRole('TEACHER') OR hasRole('ADMIN')")
+    public ResponseEntity<String> addAnnouncement(@RequestBody AnnouncementDTO announcementDTO) {
+        try {
+            announcementService.addAnnouncement(announcementDTO);
+            return ResponseEntity.status(201).body("Announcement added successfully");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error adding announcement: " + e.getMessage());
+        }
+    }
+
+    // Add student to announcement
     @PostMapping("/addStudent")
-    public String addStudentToAnnouncement(@RequestBody StudentAnnounDTO studentAnnounDTO) {
-        studentAnnounService.addStudentAnnouncement(studentAnnounDTO.getAnnouncementId(), studentAnnounDTO.getStudentIds());
-        return "Student added to announcement successfully";
+    @PreAuthorize("hasRole('TEACHER') OR hasRole('ADMIN')")
+    public ResponseEntity<String> addStudentToAnnouncement(@RequestBody StudentAnnounDTO studentAnnounDTO) {
+        try {
+            studentAnnounService.addStudentAnnouncement(studentAnnounDTO.getAnnouncementId(), studentAnnounDTO.getStudentIds());
+            return ResponseEntity.ok("Student added to announcement successfully");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error adding student to announcement: " + e.getMessage());
+        }
     }
 
-    //remove student from announcement
-    @PostMapping("/removeStudent")
-    public String removeStudentFromAnnouncement(@RequestBody StudentAnnounDTO studentAnnounDTO) {
-        studentAnnounService.removeStudentAnnouncement(studentAnnounDTO.getAnnouncementId(), studentAnnounDTO.getStudentIds());
-        return "Student removed from announcement successfully";
+    // Remove student from announcement
+    @DeleteMapping("/removeStudent")
+    @PreAuthorize("hasRole('TEACHER') OR hasRole('ADMIN')")
+    public ResponseEntity<String> removeStudentFromAnnouncement(@RequestBody StudentAnnounDTO studentAnnounDTO) {
+        try {
+            studentAnnounService.removeStudentAnnouncement(studentAnnounDTO.getAnnouncementId(), studentAnnounDTO.getStudentIds());
+            return ResponseEntity.ok("Student removed from announcement successfully");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error removing student from announcement: " + e.getMessage());
+        }
     }
 
-    //add batch to announcement
+    // Add batch to announcement
     @PostMapping("/addBatch")
-    public String addBatchesToAnnouncement(@RequestBody BatchAnnounDTO batchAnnounDTO) {
-        batchAnnounService.addBatchAnnouncements(batchAnnounDTO.getAnnouncementId(), batchAnnounDTO.getBatchIds());
-        return "Batches added to announcement successfully";
+    @PreAuthorize("hasRole('TEACHER') OR hasRole('ADMIN')")
+    public ResponseEntity<String> addBatchesToAnnouncement(@RequestBody BatchAnnounDTO batchAnnounDTO) {
+        try {
+            batchAnnounService.addBatchAnnouncements(batchAnnounDTO.getAnnouncementId(), batchAnnounDTO.getBatchIds());
+            return ResponseEntity.ok("Batches added to announcement successfully");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error adding batches to announcement: " + e.getMessage());
+        }
     }
 
-    //remove batch from announcement
-    @PostMapping("/removeBatch")
-    public String removeBatchFromAnnouncement(@RequestBody BatchAnnounDTO batchAnnounDTO) {
-        batchAnnounService.removeBatchAnnouncement(batchAnnounDTO.getAnnouncementId(), batchAnnounDTO.getBatchIds());
-        return "Batch removed from announcement successfully";
+    // Remove batch from announcement
+    @DeleteMapping("/removeBatch")
+    @PreAuthorize("hasRole('TEACHER') OR hasRole('ADMIN')")
+    public ResponseEntity<String> removeBatchFromAnnouncement(@RequestBody BatchAnnounDTO batchAnnounDTO) {
+        try {
+            batchAnnounService.removeBatchAnnouncement(batchAnnounDTO.getAnnouncementId(), batchAnnounDTO.getBatchIds());
+            return ResponseEntity.ok("Batch removed from announcement successfully");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error removing batch from announcement: " + e.getMessage());
+        }
     }
 
-    //get all students in announcement
+    // Get all students in an announcement
     @GetMapping("/getStudents")
-    public List<UsersDTO> getStudentsInAnnouncement(@RequestParam("announcementId") int announcementId) {
-        return studentAnnounService.getStudentsInAnnouncement(announcementId);
+    @PreAuthorize("hasRole('TEACHER') OR hasRole('ADMIN')")
+    public ResponseEntity<List<UsersDTO>> getStudentsInAnnouncement(@RequestParam("announcementId") int announcementId) {
+        try {
+            return ResponseEntity.ok(studentAnnounService.getStudentsInAnnouncement(announcementId));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(null); // Return null when error occurs
+        }
     }
 
-    //get all batches in announcement
+    // Get all batches in an announcement
     @GetMapping("/getBatches")
-    public List<BatchDTO> getBatchesInAnnouncement(@RequestParam("announcementId") int announcementId) {
-        return batchAnnounService.getBatchesInAnnouncement(announcementId);
+    @PreAuthorize("hasRole('TEACHER') OR hasRole('ADMIN')")
+    public ResponseEntity<List<BatchDTO>> getBatchesInAnnouncement(@RequestParam("announcementId") int announcementId) {
+        try {
+            return ResponseEntity.ok(batchAnnounService.getBatchesInAnnouncement(announcementId));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(null); // Return null when error occurs
+        }
     }
-
 }
