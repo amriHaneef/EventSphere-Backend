@@ -37,8 +37,14 @@ public class AnnouncementController {
     //add an announcement
     @PostMapping("/add")
     public String addAnnouncement(@RequestBody AnnouncementDTO announcementDTO) {
-        AnnouncementService.addAnnouncement(announcementDTO);
-        return "Announcement added successfully";
+        try {
+            AnnouncementService.addAnnouncement(announcementDTO);
+            return "Announcement added successfully";
+        }
+        catch (Exception e) {
+            return "Error adding announcement"+e.getMessage();
+        }
+
     }
 
     //add student to announcement
@@ -68,4 +74,5 @@ public class AnnouncementController {
         batchAnnounService.removeBatchAnnouncement(batchAnnounDTO.getAnnouncementId(), batchAnnounDTO.getBatchIds());
         return "Batch removed from announcement successfully";
     }
+
 }

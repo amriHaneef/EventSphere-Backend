@@ -27,6 +27,7 @@ public class BatchService {
 
     //get all batches
     public List<BatchDTO> getAllBatches() {
+
         List<Batch> batches = batchRepository.findAll();
         List<BatchDTO> batchDTO = new ArrayList<>();
         for(Batch batch : batches) {
