@@ -41,7 +41,7 @@ public class UserController {
         }
 
         // Return the generated token
-        return ResponseEntity.ok(Map.of("token:", token + " role:" + jwtUtil.getRoleFromToken(token)));
+        return ResponseEntity.ok(Map.of("token:", token));
     }
 
     @PostMapping("/register")
