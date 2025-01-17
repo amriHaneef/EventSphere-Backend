@@ -19,25 +19,23 @@ public class Users {
     public Users(String username, String password, String role, String name, String email, Date dob, Integer age) {
         this.username = username;
         this.password = password;
-        this.role = role;
+        setRole(role); // Use the role validation method
         this.name = name;
         this.email = email;
         this.dob = dob;
         this.age = age;
     }
 
-    // Constructors
     public Users(String username, String password) {
         this.username = username;
         this.password = password;
     }
 
-    public Users( String username, String password, String role,String name) {
-
+    public Users(String username, String password, String role, String name) {
         this.username = username;
         this.password = password;
-        this.role = role;
-        this.name =name;
+        setRole(role); // Use the role validation method
+        this.name = name;
     }
 
     @Id
@@ -45,11 +43,13 @@ public class Users {
     private int id;
 
     @Column(nullable = false, unique = true)
-    private String username = "Default Name";
+    private String username;
 
     @Column(nullable = false)
     private String password;
 
+    // Getter for role
+    @Getter
     @Column(nullable = false)
     private String role;
 
@@ -57,7 +57,9 @@ public class Users {
     private String name;
 
     private String email;
+
     private Date dob;
+
     private Integer age;
 
     @Column(nullable = false, updatable = false)
@@ -78,4 +80,20 @@ public class Users {
 
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Portfolio> portfolios = new HashSet<>();
+
+    // Role validation method
+    private void validateRole(String role) {
+        if (!role.equalsIgnoreCase("ADMIN") &&
+                !role.equalsIgnoreCase("TEACHER") &&
+                !role.equalsIgnoreCase("STUDENT")) {
+            throw new IllegalArgumentException("Invalid role: " + role + ". Role must be ADMIN, TEACHER, or STUDENT.");
+        }
+    }
+
+    // Setter with role validation
+    public void setRole(String role) {
+        validateRole(role);
+        this.role = role.toUpperCase(); // Normalize to uppercase
+    }
+
 }

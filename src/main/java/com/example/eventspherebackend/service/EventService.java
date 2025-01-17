@@ -43,11 +43,11 @@ public class EventService {
         List<BatchEvent> batchEventList;
         String role = JwtUtil.role;
 
-        if(role.equals("Admin")) {
+        if(role.equals("ADMIN")) {
            eventList = EventRepository.findByEventDate(eventDate);
-        } else if(role.equals("Teacher")) {
+        } else if(role.equals("TEACHER")) {
             eventList = EventRepository.findByCoordinatorUsernameAndEventDate(JwtUtil.username,eventDate);
-        } else {
+        } else if(role.equals("STUDENT")) {
             studentEventList = StudentEventRepository.findByStudentUsernameAndEventEventDate(JwtUtil.username, eventDate);
             batchEventList = BatchEventRepository.findEventByBatchIdAndEventEventDate(StudentBatchRepository.findByStudentUsername(JwtUtil.username).getBatch().getId(), eventDate);
             eventList = studentEventList.stream()
@@ -56,6 +56,9 @@ public class EventService {
             eventList.addAll(batchEventList.stream()
                     .map(BatchEvent::getEvent)
                     .collect(Collectors.toList()));
+        }
+        else {
+            return null;
         }
 
         List<EventDTO> eventDTOList = new ArrayList<>();

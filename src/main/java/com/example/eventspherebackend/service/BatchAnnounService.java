@@ -1,5 +1,7 @@
 package com.example.eventspherebackend.service;
 
+import com.example.eventspherebackend.dto.BatchDTO;
+import com.example.eventspherebackend.dto.UsersDTO;
 import com.example.eventspherebackend.model.Announcement;
 import com.example.eventspherebackend.model.Batch;
 import com.example.eventspherebackend.model.BatchAnnoun;
@@ -52,5 +54,34 @@ public class BatchAnnounService {
                     Integer.parseInt(batchId)
             );
         }
+    }
+
+    //get batches in announcement
+    public List<BatchDTO> getBatchesInAnnouncement(int announcementId) {
+        List<BatchAnnoun> batchAnnounList = BatchAnnounRepository.findBatchByAnnouncementId(announcementId);
+
+        // Convert the Batch entities to BatchDTOs
+        List<BatchDTO> batchDTOList = new java.util.ArrayList<>();
+        for (BatchAnnoun batchAnnoun : batchAnnounList) {
+            Batch batch = batchAnnoun.getBatch();
+            BatchDTO batchDTO = toBatchDTO(batch);
+            batchDTOList.add(batchDTO);
+        }
+
+        return batchDTOList;
+    }
+
+    public static BatchDTO toBatchDTO(Batch batch) {
+        BatchDTO dto = new BatchDTO();
+        dto.setId(batch.getId());
+        dto.setName(batch.getName());
+        dto.setConsultantId(batch.getConsultant().getId());
+        dto.setConsultantName(batch.getConsultant().getName());
+        dto.setStartDate(batch.getStartDate());
+        dto.setCreatedAt(batch.getCreatedAt());
+        dto.setUpdatedAt(batch.getUpdatedAt());
+        dto.setStatus(batch.getStatus());
+
+        return dto;
     }
 }

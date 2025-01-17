@@ -6,6 +6,7 @@ import com.example.eventspherebackend.dto.UsersDTO;
 import com.example.eventspherebackend.model.Users;
 import com.example.eventspherebackend.service.BatchService;
 import com.example.eventspherebackend.service.StudentBatchService;
+import com.example.eventspherebackend.util.JwtUtil;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,9 +32,9 @@ public class BatchController {
         return batchService.getBatchById(id);
     }
 
-    @GetMapping("/getBatchByConsultantId")
-    public BatchDTO getBatchByConsultantId(@RequestParam("consultantId") String consultantId) {
-        return batchService.getBatchByConsultantId(consultantId);
+    @GetMapping("/getBatchByConsultant")
+    public List<BatchDTO> getBatchByConsultantId() {
+        return batchService.getBatchByConsultantId(JwtUtil.username);
     }
 
     @PostMapping("/add")

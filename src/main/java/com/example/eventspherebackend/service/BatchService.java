@@ -54,9 +54,13 @@ public class BatchService {
         batchRepository.deleteById(id);
     }
 
-    public BatchDTO getBatchByConsultantId(String consultantId) {
-        Batch batch = batchRepository.findByConsultantId(Integer.parseInt(consultantId));
-        return toDTO(batch);
+    public List<BatchDTO> getBatchByConsultantId(String username) {
+        List<Batch> batches= batchRepository.findBatchByConsultantUsername(username);
+        List<BatchDTO> batchDTOs = new ArrayList<>();
+        for(Batch batch : batches) {
+            batchDTOs.add(toDTO(batch));
+        }
+        return batchDTOs;
     }
 
     public Batch toEntity(BatchDTO dto) {

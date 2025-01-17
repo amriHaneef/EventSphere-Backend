@@ -1,6 +1,7 @@
 package com.example.eventspherebackend.service;
 
 import com.example.eventspherebackend.dto.UsersDTO;
+import com.example.eventspherebackend.model.Event;
 import com.example.eventspherebackend.model.StudentEvent;
 import com.example.eventspherebackend.model.Users;
 import com.example.eventspherebackend.repository.EventRepository;
@@ -26,12 +27,22 @@ public class StudentEventService {
     }
 
     //assign student to event
-    public void assignStudent(String eventId, String studentId) {
-        StudentEvent studentEvent = new StudentEvent();
-        studentEvent.setEvent(EventRepository.findById(eventId).orElse(null));
-        studentEvent.setStudent(UserRepository.findById(studentId).orElse(null));
-        StudentEventRepository.save(studentEvent);
+    public void assignStudent(String eventId, List<String> studentIds) {
+        Event event = EventRepository.findById(eventId).orElseThrow(() ->
+                new IllegalArgumentException("Event not found with ID: " + eventId));
+
+        for (String studentId : studentIds) {
+            Users student = UserRepository.findById(studentId).orElseThrow(() ->
+                    new IllegalArgumentException("Student not found with ID: " + studentId));
+
+            StudentEvent studentEvent = new StudentEvent();
+            studentEvent.setEvent(event);
+            studentEvent.setStudent(student);
+
+            StudentEventRepository.save(studentEvent);
+        }
     }
+
 
     //get all students assigned to an event
     public List<UsersDTO> getAsignedStudents(int id) {

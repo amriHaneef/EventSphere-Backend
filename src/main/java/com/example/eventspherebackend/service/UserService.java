@@ -7,21 +7,16 @@ import com.example.eventspherebackend.model.Users;
 import com.example.eventspherebackend.repository.PortfolioRepository;
 import com.example.eventspherebackend.repository.UserRepository;
 import com.example.eventspherebackend.util.JwtUtil;
-import lombok.ToString;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -56,7 +51,7 @@ public UserService(AuthenticationManager authenticationManager, UserRepository u
 
     //add user
     public void registerUser(UsersDTO usersDto) {
-        Users users = toEntity(usersDto);
+        Users users = toUserEntity(usersDto);
         userRepository.save(users);
 
         createPortfolio(users);
@@ -65,8 +60,48 @@ public UserService(AuthenticationManager authenticationManager, UserRepository u
 
     //update user
     public Users updateUser(UsersDTO usersDto) {
-        Users users = toEntity(usersDto);
-        return userRepository.save(users);
+        // Fetch the existing user from the database
+        Users existingUser = userRepository.findById(String.valueOf(usersDto.getId()))
+                .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + usersDto.getId()));
+
+        // Update fields from the DTO, preserving existing data
+        if (usersDto.getUsername() != null) {
+            existingUser.setUsername(usersDto.getUsername());
+        }
+
+        if (usersDto.getPassword() != null && !usersDto.getPassword().isEmpty()) {
+            existingUser.setPassword(passwordEncoder.encode(usersDto.getPassword()));
+        }
+
+        if (usersDto.getRole() != null) {
+            existingUser.setRole(usersDto.getRole());
+        }
+
+        if (usersDto.getName() != null) {
+            existingUser.setName(usersDto.getName());
+        }
+
+        if (usersDto.getEmail() != null) {
+            existingUser.setEmail(usersDto.getEmail());
+        }
+
+        if (usersDto.getDob() != null) {
+            existingUser.setDob(usersDto.getDob());
+        }
+
+        if (usersDto.getAge() != null) {
+            existingUser.setAge(usersDto.getAge());
+        }
+
+        if (usersDto.getStatus() != null) {
+            existingUser.setStatus(usersDto.getStatus());
+        }
+
+        // Always update the updatedAt field
+        existingUser.setUpdatedAt(LocalDateTime.now());
+
+        // Save the updated entity
+        return userRepository.save(existingUser);
     }
 
     //remove user
@@ -77,13 +112,13 @@ public UserService(AuthenticationManager authenticationManager, UserRepository u
     //get user by id
     public UsersDTO getUserById(String id) {
         Users user = userRepository.findById(id).orElse(null);
-        return toDto(user);
+        return toUserDto(user);
     }
 
     //get all users
     public List<UsersDTO> getAllUsers() {
         List<Users> users = userRepository.findAll();
-        return users.stream().map(this::toDto).collect(Collectors.toList());
+        return users.stream().map(this::toUserDto).collect(Collectors.toList());
     }
 
     //verify user
@@ -134,19 +169,19 @@ public UserService(AuthenticationManager authenticationManager, UserRepository u
 
     //update portfolio
     public void updatePortfolio(PortfolioDTO portfolioDTO) {
-        Portfolio portfolio = toEntity(portfolioDTO, getUserByUsername(portfolioDTO.getStudentName()));
+        Portfolio portfolio = toPortEntity(portfolioDTO, getUserByUsername(portfolioDTO.getStudentName()));
         portfolioRepository.save(portfolio);
     }
 
     //get portfolio by student id
     public PortfolioDTO getPortfolioByStudentId(int studentId) {
         Portfolio portfolio = portfolioRepository.findByStudentId(studentId);
-        return toDto(portfolio);
+        return toPortDto(portfolio);
     }
 
 
     //convert entity to dto
-    public UsersDTO toDto(Users user) {
+    public UsersDTO toUserDto(Users user) {
         if (user == null) {
             return null;
         }
@@ -166,13 +201,14 @@ public UserService(AuthenticationManager authenticationManager, UserRepository u
     }
 
     //convert dto to entity
-    public Users toEntity(UsersDTO dto) {
+    public Users toUserEntity(UsersDTO dto) {
         if (dto == null) {
             return null;
         }
 
         Users user = new Users();
-        if(dto.getPassword() != null) {
+
+        if (dto.getPassword() != null && !dto.getPassword().isEmpty()) {
             user.setPassword(passwordEncoder.encode(dto.getPassword()));
         }
 
@@ -193,7 +229,7 @@ public UserService(AuthenticationManager authenticationManager, UserRepository u
     }
 
     //convert portfolio entity to dto
-    public PortfolioDTO toDto(Portfolio portfolio) {
+    public PortfolioDTO toPortDto(Portfolio portfolio) {
         if (portfolio == null) {
             return null;
         }
@@ -214,7 +250,7 @@ public UserService(AuthenticationManager authenticationManager, UserRepository u
     }
 
     //convert portfolio dto to entity
-    public Portfolio toEntity(PortfolioDTO dto, Users student) {
+    public Portfolio toPortEntity(PortfolioDTO dto, Users student) {
         if (dto == null) {
             return null;
         }
@@ -234,5 +270,7 @@ public UserService(AuthenticationManager authenticationManager, UserRepository u
     }
 
 
-
+    public List<Users> getUserByRole(String role) {
+        return userRepository.findByRole(role);
+    }
 }

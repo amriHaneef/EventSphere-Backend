@@ -1,8 +1,6 @@
 package com.example.eventspherebackend.controller;
 
-import com.example.eventspherebackend.dto.AnnouncementDTO;
-import com.example.eventspherebackend.dto.BatchAnnounDTO;
-import com.example.eventspherebackend.dto.StudentAnnounDTO;
+import com.example.eventspherebackend.dto.*;
 import com.example.eventspherebackend.model.Announcement;
 import com.example.eventspherebackend.model.BatchAnnoun;
 import com.example.eventspherebackend.model.StudentAnnoun;
@@ -73,6 +71,18 @@ public class AnnouncementController {
     public String removeBatchFromAnnouncement(@RequestBody BatchAnnounDTO batchAnnounDTO) {
         batchAnnounService.removeBatchAnnouncement(batchAnnounDTO.getAnnouncementId(), batchAnnounDTO.getBatchIds());
         return "Batch removed from announcement successfully";
+    }
+
+    //get all students in announcement
+    @GetMapping("/getStudents")
+    public List<UsersDTO> getStudentsInAnnouncement(@RequestParam("announcementId") int announcementId) {
+        return studentAnnounService.getStudentsInAnnouncement(announcementId);
+    }
+
+    //get all batches in announcement
+    @GetMapping("/getBatches")
+    public List<BatchDTO> getBatchesInAnnouncement(@RequestParam("announcementId") int announcementId) {
+        return batchAnnounService.getBatchesInAnnouncement(announcementId);
     }
 
 }

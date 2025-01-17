@@ -1,5 +1,6 @@
 package com.example.eventspherebackend.service;
 
+import com.example.eventspherebackend.dto.UsersDTO;
 import com.example.eventspherebackend.model.Announcement;
 import com.example.eventspherebackend.model.StudentAnnoun;
 import com.example.eventspherebackend.model.Users;
@@ -53,5 +54,39 @@ public class StudentAnnounService {
                     Integer.parseInt(studentId)
             );
         }
+    }
+
+    public List<UsersDTO> getStudentsInAnnouncement(int announcementId) {
+        List<StudentAnnoun> studentAnnounList = StudentAnnounRepository.findStudentByAnnouncementId(announcementId);
+
+        // Convert the StudentAnnoun entities to UsersDTOs
+        List<UsersDTO> usersDTOList = new java.util.ArrayList<>();
+        for (StudentAnnoun studentAnnoun : studentAnnounList) {
+            Users student = studentAnnoun.getStudent();
+            UsersDTO usersDTO = toUserDto(student);
+            usersDTOList.add(usersDTO);
+        }
+
+        return usersDTOList;
+    }
+
+    //convert entity to dto
+    public UsersDTO toUserDto(Users user) {
+        if (user == null) {
+            return null;
+        }
+
+        UsersDTO dto = new UsersDTO();
+        dto.setId(user.getId());
+        dto.setUsername(user.getUsername());
+        dto.setRole(user.getRole());
+        dto.setName(user.getName());
+        dto.setEmail(user.getEmail());
+        dto.setDob(user.getDob());
+        dto.setAge(user.getAge());
+        dto.setStatus(user.getStatus());
+        dto.setCreatedAt(user.getCreatedAt());
+        dto.setUpdatedAt(user.getUpdatedAt());
+        return dto;
     }
 }

@@ -10,4 +10,6 @@ public interface StudentAnnounRepository extends JpaRepository<StudentAnnoun, St
     List<StudentAnnoun> findByStudentUsername(String username);
 
     void deleteByAnnouncementIdAndStudentId(int announId, int studentId);
+
+    List<StudentAnnoun> findStudentByAnnouncementId(int announcementId);
 }

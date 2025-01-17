@@ -64,8 +64,8 @@ public class EventController {
 
     @PostMapping("addBatch")
     @PreAuthorize("hasRole('Teacher')")
-    public String addBatch(@RequestBody Map<String, String> request) {
-        batchEventService.assignBatch(request.get("eventId"), request.get("batchId"));
+    public String addBatch(@RequestBody EventBatchDTO eventBatchDTO) {
+        batchEventService.assignBatch(eventBatchDTO.getEventId(), eventBatchDTO.getBatchIds());
         return "Batch added successfully";
     }
 
@@ -88,8 +88,8 @@ public class EventController {
 
     @PostMapping("/addStudent")
     @PreAuthorize("hasRole('Teacher')")
-    public String addStudent(@RequestBody Map<String, String> request) {
-        studentEventService.assignStudent(request.get("eventId"), request.get("studentId"));
+    public String addStudent(@RequestBody EventStudentDTO eventStudentDTO) {
+        studentEventService.assignStudent(eventStudentDTO.getEventId(), eventStudentDTO.getStudentIds());
         return "Student added successfully";
     }
 

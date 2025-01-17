@@ -160,4 +160,17 @@ public class UserController {
         }
     }
 
+    //get user by role
+    @GetMapping("/getByRole")
+    public ResponseEntity<?> getByRole(@RequestParam String role) {
+        try {
+            // Get user by role
+            return ResponseEntity.ok(userService.getUserByRole(role));
+        }
+        catch (Exception e){
+            return ResponseEntity.ok(Map.of("error: ", e.getMessage()));
+
+        }
+    }
+
 }

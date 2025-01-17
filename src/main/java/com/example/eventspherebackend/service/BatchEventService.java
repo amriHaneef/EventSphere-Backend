@@ -3,6 +3,7 @@ package com.example.eventspherebackend.service;
 import com.example.eventspherebackend.dto.BatchDTO;
 import com.example.eventspherebackend.model.Batch;
 import com.example.eventspherebackend.model.BatchEvent;
+import com.example.eventspherebackend.model.Event;
 import com.example.eventspherebackend.repository.BatchEventRepository;
 import com.example.eventspherebackend.repository.BatchRepository;
 import com.example.eventspherebackend.repository.EventRepository;
@@ -25,13 +26,22 @@ public class BatchEventService {
     }
 
     // assign a batch to an event
-    public void assignBatch(String eventId, String batchId) {
+    public void assignBatch(String eventId, List<String> batchIds) {
+        Event event = EventRepository.findById(eventId).orElseThrow(() ->
+                new IllegalArgumentException("Event not found with ID: " + eventId));
 
-        BatchEvent batchEvent = new BatchEvent();
-        batchEvent.setEvent(EventRepository.findById(eventId).orElse(null));
-        batchEvent.setBatch(BatchRepository.findById(batchId).orElse(null));
-        BatchEventRepository.save(batchEvent);
+        for (String batchId : batchIds) {
+            Batch batch = BatchRepository.findById(batchId).orElseThrow(() ->
+                    new IllegalArgumentException("Batch not found with ID: " + batchId));
+
+            BatchEvent batchEvent = new BatchEvent();
+            batchEvent.setEvent(event);
+            batchEvent.setBatch(batch);
+
+            BatchEventRepository.save(batchEvent);
+        }
     }
+
 
     // get all batches assigned to an event
     public List<BatchDTO> getAsignedBatches(int id) {
