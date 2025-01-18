@@ -41,6 +41,15 @@ public class EventController {
         }
     }
 
+    @GetMapping("/getAll")
+    public ResponseEntity<?> getAllEvents() {
+        try {
+            return ResponseEntity.ok(eventService.getAll());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error fetching events: " + e.getMessage());
+        }
+    }
+
     // Get event by ID
     @GetMapping("/getEventById")
     public ResponseEntity<?> getEventById(@RequestParam("eventId") String eventId) {

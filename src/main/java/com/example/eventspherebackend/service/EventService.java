@@ -201,5 +201,27 @@ public class EventService {
         return dto;
     }
 
+    public List<EventDTO> getAll() {
+        List<Event> events = EventRepository.findAll();
+        List<EventDTO> eventDTOs = new ArrayList<>();
 
+        for (Event event : events) {
+            EventDTO eventDTO = new EventDTO();
+            eventDTO.setId(event.getId());
+            eventDTO.setTitle(event.getTitle());
+            eventDTO.setType(event.getType());
+            eventDTO.setTimePeriod(event.getTimePeriod());
+            eventDTO.setSessionLink(event.getSessionLink());
+            eventDTO.setPlatform(event.getPlatform());
+            eventDTO.setCoordinatorId(String.valueOf(event.getCoordinator() != null ? event.getCoordinator().getId() : null));
+            eventDTO.setCoordinatorName(event.getCoordinator() != null ? event.getCoordinator().getName() : null);
+            eventDTO.setCreatedAt(event.getCreatedAt());
+            eventDTO.setUpdatedAt(event.getUpdatedAt());
+            eventDTO.setStatus(event.getStatus());
+            eventDTO.setEventDate(event.getEventDate());
+            eventDTOs.add(eventDTO);
+        }
+        return eventDTOs;
+
+    }
 }
