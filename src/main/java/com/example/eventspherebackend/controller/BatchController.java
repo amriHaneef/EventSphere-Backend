@@ -25,11 +25,11 @@ public class BatchController {
 
     // Get all batches
     @GetMapping("/getAll")
-    public ResponseEntity<List<BatchDTO>> getAllBatches() {
+    public ResponseEntity<?> getAllBatches() {
         try {
             return ResponseEntity.ok(batchService.getAllBatches());
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(null); // Return null when error occurs
+            return ResponseEntity.badRequest().body("Error fetching batches: " + e.getMessage());
         }
     }
 

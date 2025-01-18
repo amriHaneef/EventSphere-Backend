@@ -25,17 +25,19 @@ public class BatchService {
         batchRepository.save(batch);
     }
 
-    //get all batches
     public List<BatchDTO> getAllBatches() {
-
         List<Batch> batches = batchRepository.findAll();
-        List<BatchDTO> batchDTO = new ArrayList<>();
-        for(Batch batch : batches) {
-            batchDTO.add(toDTO(batch));
+        System.out.println("Number of batches retrieved: " + batches.size());
+
+        List<BatchDTO> batchDTOs = new ArrayList<>();
+        for (Batch batch : batches) {
+            BatchDTO dto = toDTO(batch);
+            batchDTOs.add(dto);
         }
 
-        return batchDTO;
+        return batchDTOs;
     }
+
 
     //get batch by id
     public BatchDTO getBatchById(String id) {
