@@ -114,7 +114,7 @@ public class EventService {
         event.setTimePeriod(eventDTO.getTimePeriod());
         event.setSessionLink(eventDTO.getSessionLink());
         event.setPlatform(eventDTO.getPlatform());
-        event.setCoordinator(UserRepository.findById(String.valueOf(eventDTO.getCoordinatorId())).orElse(null));
+        event.setCoordinator(UserRepository.findByUsername(JwtUtil.username));
         event.setCreatedAt(eventDTO.getCreatedAt());
         event.setUpdatedAt(eventDTO.getUpdatedAt());
         event.setStatus(eventDTO.getStatus());
